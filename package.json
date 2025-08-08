@@ -1,29 +1,39 @@
 {
   "name": "@libdev-ui/base",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Custom React UI components by LibDev",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.mjs"
+    },
+    "./styles.css": "./dist/index.css"
+  },
+  "sideEffects": false,
   "files": [
     "dist",
-    "src/theme/global.css"
+    "src/theme/global.css",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "prepublishOnly": "pnpm run build",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "release:patch": "npm version patch -m \"chore(release): %s\" && pnpm build && npm publish --access public",
+    "release:minor": "npm version minor -m \"chore(release): %s\" && pnpm build && npm publish --access public",
+    "release:major": "npm version major -m \"chore(release): %s\" && pnpm build && npm publish --access public"
   },
-  "keywords": [
-    "react",
-    "ui",
-    "libdev",
-    "components"
-  ],
+  "keywords": ["react", "ui", "libdev", "components"],
   "author": "WebDigiTech - Ventsislav Kolev",
   "license": "MIT",
+  "publishConfig": { "access": "public" },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
