@@ -3,12 +3,10 @@ import { css } from "@emotion/react";
 import { Color, Size, Variant, Radius } from "../common.types";
 
 /* ---------------------------------------------
- *  Мапване на пропсовете към CSS
+ * 🎯 Мапване на пропсовете към CSS
  * ------------------------------------------- */
 
-// Връща подходяща CSS променлива за цвят според Color пропса
 const resolveColorVar = (color?: Color | string) => {
-  // Ако е custom string (hex/rgb/var(...)), връщаме директно
   if (!color) return "var(--color-primary, #3b82f6)";
   switch (color) {
     case "primary":
@@ -28,7 +26,7 @@ const resolveColorVar = (color?: Color | string) => {
   }
 };
 
-// Падинг и шрифтови стойности според size
+// 📏 Размерни токени (НЕ ПИПАМЕ стойностите)
 const sizeTokens = (size: Size = "md") => {
   switch (size) {
     case "sm":
@@ -68,7 +66,7 @@ const sizeTokens = (size: Size = "md") => {
   }
 };
 
-// Радиус според :root променливите и Radius пропса
+// 🎛 Радиус
 const radiusVar = (r: Radius = "md") => {
   switch (r) {
     case "sm":
@@ -81,20 +79,20 @@ const radiusVar = (r: Radius = "md") => {
   }
 };
 
-// Общи цветове/граници/фон за инпут
+// 🎨 Светли дефолти (бял инпут)
 const baseVars = {
-  bg: "var(--input-bg, var(--surface-1, #0b0f16))",
-  bgFilled: "var(--input-bg-filled, var(--surface-2, #0f1520))",
-  text: "var(--input-text, var(--text-primary, #e5e7eb))",
-  placeholder: "var(--input-placeholder, var(--text-tertiary, #9ca3af))",
-  border: "var(--input-border, var(--border-color, #1f2937))",
-  focusRing: "var(--focus-ring, rgba(59,130,246,0.45))",
-  disabledBg: "var(--input-bg-disabled, rgba(148,163,184,0.08))",
-  disabledText: "var(--input-text-disabled, rgba(148,163,184,0.6))",
+  bg: "var(--input-bg, #ffffff)",
+  bgFilled: "var(--input-bg-filled, #f7f8fa)",
+  text: "var(--input-text, #111827)",
+  placeholder: "var(--input-placeholder, #6b7280)",
+  border: "var(--input-border, #e5e7eb)",
+  focusRing: "var(--focus-ring, rgba(59,130,246,0.35))",
+  disabledBg: "var(--input-bg-disabled, #e5e7eb)",
+  disabledText: "var(--input-text-disabled, #9ca3af)",
   error: "var(--color-danger, #ef4444)",
 };
 
-// Стил за вариант (filled | outlined | ghost)
+// 🧪 Варианти
 const variantStyles = (variant: Variant = "outlined", color?: Color | string) => {
   const c = resolveColorVar(color);
   switch (variant) {
@@ -112,16 +110,14 @@ const variantStyles = (variant: Variant = "outlined", color?: Color | string) =>
       `;
     case "ghost":
       return css`
-        background: transparent;
+        background: ${baseVars.bg};
         border: 1px solid transparent;
         &:hover {
-          background: ${baseVars.bgFilled};
           border-color: ${baseVars.border};
         }
         &[data-focused="true"] {
           border-color: ${c};
           box-shadow: 0 0 0 3px ${baseVars.focusRing};
-          background: ${baseVars.bg};
         }
       `;
     case "outlined":
@@ -141,7 +137,7 @@ const variantStyles = (variant: Variant = "outlined", color?: Color | string) =>
 };
 
 /* ---------------------------------------------
- *  Styled елементи
+ * 🧱 Styled елементи
  * ------------------------------------------- */
 
 export interface StyledInputRootProps {
@@ -158,55 +154,52 @@ export interface StyledInputRootProps {
   $isFocused?: boolean;
 }
 
-// Контейнерът обгръщащ инпута и адорнментите
+// 🔲 Root контейнерът носи фона + точната височина
 export const StyledInputRoot = styled.div<StyledInputRootProps>`
-  /* Базова подредба */
   position: relative;
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
   width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "auto")};
   min-width: 10rem;
+  overflow: hidden; /* важен fix за „черните уши“ */
 
-  /* Визуални настройки */
+  /* Минималната височина идва от токена за съответния size */
+  ${({ $size }) => {
+    const t = sizeTokens($size);
+    return css`
+      min-height: ${t.height};
+    `;
+  }}
+
   color: ${baseVars.text};
   border-radius: ${({ $radius }) => radiusVar($radius)};
   transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   ${props => variantStyles(props.$variant, props.$color)};
 
-  /* Disabled състояние */
   ${({ $disabled }) =>
     $disabled &&
     css`
       cursor: not-allowed;
-      opacity: 0.8;
       background: ${baseVars.disabledBg};
       & * {
         color: ${baseVars.disabledText};
       }
     `}
 
-  /* ❗ Error състояние */
   ${({ $error }) =>
     $error &&
     css`
       border-color: ${baseVars.error} !important;
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
     `}
-
-  /* Атрибут за фокус, който се сетва от логиката */
-  &[data-focused="true"] {
-    /* Стилът идва от variantStyles */
-  }
 `;
 
-// 📎 Зони за адорнменти (икони/текст преди/след инпута)
+// 🔗 Adornments
 export const StyledAdornment = styled.div<{ $position: "start" | "end"; $size?: Size }>`
-  /* Подредба и отстояния */
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  /* Размер спрямо size */
   ${({ $size }) => {
     const t = sizeTokens($size);
     return css`
@@ -217,7 +210,6 @@ export const StyledAdornment = styled.div<{ $position: "start" | "end"; $size?: 
     `;
   }}
 
-  /* Позиция */
   ${({ $position }) =>
     $position === "start"
       ? css`
@@ -228,7 +220,7 @@ export const StyledAdornment = styled.div<{ $position: "start" | "end"; $size?: 
         `}
 `;
 
-// Реалният input елемент (за single-line режим)
+// ✍️ Реалният input – без фиксирана height; фона е прозрачен
 export const StyledInputElement = styled.input<{
   $size?: Size;
   $hasStartAdornment?: boolean;
@@ -236,9 +228,9 @@ export const StyledInputElement = styled.input<{
   $multiline?: boolean;
   $disabled?: boolean;
 }>`
-  /* Разположение вътре в root */
   order: 1;
   flex: 1 1 auto;
+  min-width: 0; /* предотвратява разтегляне извън контейнера */
   width: 100%;
   border: none;
   outline: none;
@@ -246,14 +238,13 @@ export const StyledInputElement = styled.input<{
   color: ${baseVars.text};
   font-family: inherit;
   appearance: none;
+  box-sizing: border-box;
 
-  /* 🌫 Placeholder цвят */
   &::placeholder {
     color: ${baseVars.placeholder};
     opacity: 1;
   }
 
-  /* Размери според size и адорнменти */
   ${({ $size, $hasStartAdornment, $hasEndAdornment }) => {
     const t = sizeTokens($size);
     const padStart = $hasStartAdornment ? "0" : t.paddingX;
@@ -262,11 +253,10 @@ export const StyledInputElement = styled.input<{
       font-size: ${t.fontSize};
       line-height: ${t.lineHeight};
       padding: ${t.paddingY} ${padEnd} ${t.paddingY} ${padStart};
-      height: ${t.height};
+      /* без height – височината идва от root:min-height */
     `;
   }}
 
-  /* Disabled курсор */
   ${({ $disabled }) =>
     $disabled &&
     css`
@@ -274,7 +264,7 @@ export const StyledInputElement = styled.input<{
     `}
 `;
 
-// Textarea за multiline режим
+// 📝 Textarea – без фиксирана height; фона е прозрачен
 export const StyledTextareaElement = styled.textarea<{
   $size?: Size;
   $hasStartAdornment?: boolean;
@@ -286,6 +276,7 @@ export const StyledTextareaElement = styled.textarea<{
 }>`
   order: 1;
   flex: 1 1 auto;
+  min-width: 0;
   width: 100%;
   border: none;
   outline: none;
@@ -294,6 +285,7 @@ export const StyledTextareaElement = styled.textarea<{
   font-family: inherit;
   resize: vertical;
   appearance: none;
+  box-sizing: border-box;
 
   &::placeholder {
     color: ${baseVars.placeholder};
@@ -308,7 +300,7 @@ export const StyledTextareaElement = styled.textarea<{
       font-size: ${t.fontSize};
       line-height: ${t.lineHeight};
       padding: ${t.paddingY} ${padEnd} ${t.paddingY} ${padStart};
-      min-height: calc(${t.lineHeight} * 3 + ${t.paddingY} * 2); /* 🧮 разумен минимум */
+      /* височината пак идва от root:min-height; textarea си расте при drag */
     `;
   }}
 
@@ -319,13 +311,12 @@ export const StyledTextareaElement = styled.textarea<{
     `}
 `;
 
-// Бутон за изчистване (X), позициониран в края
+// ❌ Clear бутон
 export const StyledClearButton = styled.button<{
   $size?: Size;
   $hasEndAdornment?: boolean;
   $disabled?: boolean;
 }>`
-  /* Позиция и вид */
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -338,7 +329,6 @@ export const StyledClearButton = styled.button<{
   cursor: pointer;
   background: transparent;
 
-  /* Размери според size */
   ${({ $size }) => {
     const t = sizeTokens($size);
     return css`
@@ -348,17 +338,15 @@ export const StyledClearButton = styled.button<{
     `;
   }}
 
-  /* Визия */
   color: ${baseVars.placeholder};
   border-radius: 999px;
   transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 
   &:hover {
-    background: rgba(148, 163, 184, 0.15);
+    background: rgba(0, 0, 0, 0.06);
     color: ${baseVars.text};
   }
 
-  /* Disabled състояние */
   ${({ $disabled }) =>
     $disabled &&
     css`
@@ -367,13 +355,12 @@ export const StyledClearButton = styled.button<{
       pointer-events: none;
     `}
 
-  /* 🧑‍🦯 Достъпност (фокус) */
   &:focus-visible {
     box-shadow: 0 0 0 2px ${baseVars.focusRing};
   }
 `;
 
-// Вътрешен контейнер за правилно отместване при адорнменти
+// 📦 Вътрешен контейнер – без хор. padding (за да няма двойно)
 export const StyledField = styled.div<{
   $size?: Size;
   $hasStartAdornment?: boolean;
@@ -381,16 +368,13 @@ export const StyledField = styled.div<{
 }>`
   position: relative;
   flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   align-items: center;
 
-  ${({ $size, $hasStartAdornment, $hasEndAdornment }) => {
+  ${({ $size }) => {
     const t = sizeTokens($size);
-    const padStart = $hasStartAdornment ? "0" : t.paddingX;
-    const padEnd = $hasEndAdornment ? "0" : t.paddingX;
     return css`
-      padding-inline-start: ${padStart};
-      padding-inline-end: ${padEnd};
       gap: ${t.gap};
     `;
   }}

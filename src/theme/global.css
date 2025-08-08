@@ -7,8 +7,12 @@
   --color-secondary-disabled-text: #9ca3af;
   --color-white: #ffffff;
   --color-dark-text: #374151;
-  
+
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
+
+  --input-bg: #0b0f16;
+  --input-text: #e5e7eb;
+  --input-border: #1f2937;
 }
