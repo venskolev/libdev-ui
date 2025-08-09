@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.4.1] - 2025-08-09
+
+### Fixed
+
+- **sl/types:** allow per-property responsive values (`width: { xs, sm, md }`, etc.) and keep spacing shorthands + top-level breakpoints working together.
+
+### Internal
+
+- **styleEngine:** add `Responsive<T>` type and runtime expansion for responsive per-property values.
+
 ## [0.4.0] - 2025-08-09
 
 ### Added in 0.4.0
