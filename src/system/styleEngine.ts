@@ -82,7 +82,6 @@ const mergeDeep = <T extends Record<string, any>, S extends Record<string, any>>
   source: S
 ): T & S => {
   if (!isObject(target) || !isObject(source)) {
-    // ако някой от аргументите не е обект, връщаме source (или target ако source е null/undefined)
     return (source ?? target) as T & S;
   }
   const out: Record<string, any> = { ...target };
@@ -94,13 +93,134 @@ const mergeDeep = <T extends Record<string, any>, S extends Record<string, any>>
   return out as T & S;
 };
 
-// Шорткъти за margin/padding: p, px, py, pt, pr, pb, pl, m, mx, my, mt, mr, mb, ml
+const hasBreakpointKeys = (v: unknown): v is Partial<Record<BreakpointKey, any>> =>
+  !!v &&
+  typeof v === "object" &&
+  !Array.isArray(v) &&
+  bpKeys.some((k) => Object.prototype.hasOwnProperty.call(v as object, k));
+
+/* ---------- проп алиаси (MUI-стил) ---------- */
+
+const PROP_ALIASES: Record<string, string> = {
+  bgcolor: "backgroundColor",
+  bg: "backgroundColor",
+};
+
+/* ---------- цветови/палетни пропове ---------- */
+
+const COLOR_PROPS = new Set([
+  "color",
+  "background",
+  "backgroundColor",
+  "borderColor",
+  "outlineColor",
+  "caretColor",
+  "fill",
+  "stroke",
+]);
+
+/* ---------- дизайн токени ---------- */
+
+const RADIUS_TOKENS = new Set(["sm", "md", "lg", "xl", "2xl", "pill", "circle"]);
+const SHADOW_TOKENS = new Set(["xs", "sm", "md", "lg", "xl"]);
+
+/** конструира var() с optional fallback верига */
+const varChain = (primary: string, ...fallbacks: string[]) => {
+  if (!fallbacks.length) return `var(${primary})`;
+  // var(--a, var(--b, var(--c)))
+  return `var(${primary}, ${varChain(fallbacks[0], ...fallbacks.slice(1))})`;
+};
+
+const isPaletteToken = (v: unknown): v is string =>
+  typeof v === "string" && v.includes(".");
+
+const toJoyPaletteVar = (token: string) =>
+  `--joy-palette-${token.replace(/\./g, "-")}`;
+
+/** map стойности по property към съответните CSS var токени */
+const mapDesignToken = (prop: string, val: any): any => {
+  if (val == null) return val;
+
+  // border radius токени
+  if (
+    (prop === "borderRadius" ||
+      prop === "borderTopLeftRadius" ||
+      prop === "borderTopRightRadius" ||
+      prop === "borderBottomLeftRadius" ||
+      prop === "borderBottomRightRadius") &&
+    typeof val === "string"
+  ) {
+    if (val === "pill") return "9999px";
+    if (val === "circle") return "50%";
+    if (RADIUS_TOKENS.has(val)) {
+      // Joy първо, после нашия
+      return varChain(`--joy-radius-${val}`, `--radius-${val}`);
+    }
+  }
+
+  // boxShadow токени
+  if (prop === "boxShadow" && typeof val === "string" && SHADOW_TOKENS.has(val)) {
+    return varChain(`--joy-shadow-${val}`, `--shadow-${val}`);
+  }
+
+  // палетни токени за цветови пропове
+  if (COLOR_PROPS.has(prop) && isPaletteToken(val)) {
+    const joyVar = toJoyPaletteVar(val);
+    // fallback към нашата схема (пример: primary.solidBg → --color-primary-solidBg)
+    const ours = `--color-${val.replace(/\./g, "-")}`;
+    return varChain(joyVar, ours);
+  }
+
+  // ако стойността вече е var(...) или нормален CSS цвят/стойност — оставяме
+  return val;
+};
+
+/* ----- spacing скалиране и проп мапинг ----- */
+
+const SPACING_PROPS = new Set<keyof CSSProperties>([
+  "margin",
+  "marginTop",
+  "marginRight",
+  "marginBottom",
+  "marginLeft",
+  "padding",
+  "paddingTop",
+  "paddingRight",
+  "paddingBottom",
+  "paddingLeft",
+  "gap",
+  "rowGap",
+  "columnGap",
+]);
+
+const scaleIfSpacing = (prop: string, val: any, theme: LibDevTheme) => {
+  if (!SPACING_PROPS.has(prop as keyof CSSProperties)) return val;
+  if (typeof val === "number") return theme.spacing(val);
+  return val;
+};
+
+const transformPropValue = (prop: string, val: any, theme: LibDevTheme) => {
+  if (hasBreakpointKeys(val)) {
+    const out: Record<string, any> = {};
+    for (const k of bpKeys) {
+      if ((val as any)[k] === undefined) continue;
+      const v = (val as any)[k];
+      out[k] = mapDesignToken(prop, scaleIfSpacing(prop, v, theme));
+    }
+    return out;
+  }
+  const scaled = scaleIfSpacing(prop, val, theme);
+  return mapDesignToken(prop, scaled);
+};
+
+
+
 const expandSpaceShorthands = (obj: CSSObject, theme: LibDevTheme): CSSObject => {
   const out: CSSObject = { ...obj };
-  const s = (v: any) => (typeof v === "number" ? theme.spacing(v) : v);
 
   const apply = (prop: keyof CSSProperties, v: any) => {
-    if (v !== undefined) (out as any)[prop] = s(v);
+    const tv = transformPropValue(prop as string, v, theme);
+    (out as any)[prop] = tv;
   };
 
   const map: Array<[string, Array<keyof CSSProperties>]> = [
@@ -122,47 +242,44 @@ const expandSpaceShorthands = (obj: CSSObject, theme: LibDevTheme): CSSObject =>
 
   for (const [key, props] of map) {
     const v = (out as any)[key];
-    if (v !== undefined) {
-      for (const p of props) apply(p, v);
-      delete (out as any)[key];
-    }
+    if (v === undefined) continue;
+    for (const p of props) apply(p, v);
+    delete (out as any)[key];
   }
   return out;
 };
 
-const hasBreakpointKeys = (v: unknown): v is Partial<Record<BreakpointKey, any>> =>
-  !!v &&
-  typeof v === "object" &&
-  !Array.isArray(v) &&
-  bpKeys.some((k) => Object.prototype.hasOwnProperty.call(v as object, k));
+/**
+ * Нормализира имена на пропове (алиаси) – например bgcolor → backgroundColor
+ */
+const normalizePropName = (prop: string) => PROP_ALIASES[prop] ?? prop;
 
 /**
- * Разширява responsive стойности per-property:
- * { width: { xs: "100%", sm: 400, md: 600 } } ->
- * {
- *   width: "100%",
- *   "@media (min-width:600px)": { width: 400 },
- *   "@media (min-width:900px)": { width: 600 },
- * }
+ * Разширява responsive стойности per-property и прилага
+ * токени/скалиране върху стойностите + прилага алиаси на пропове.
  */
 const expandResponsivePerProperty = (obj: CSSObject, theme: LibDevTheme): CSSObject => {
   const out: CSSObject = {};
 
-  for (const key of Object.keys(obj)) {
-    const val: any = (obj as any)[key];
+  for (const rawKey of Object.keys(obj)) {
+    const key = normalizePropName(rawKey);
+    const raw = (obj as any)[rawKey];
 
-    if (hasBreakpointKeys(val)) {
-      if (val.xs !== undefined) {
-        (out as any)[key] = val.xs;
+    if (hasBreakpointKeys(raw)) {
+      const transformed = transformPropValue(key, raw, theme) as Record<string, any>;
+      // base от xs (ако има)
+      if (transformed.xs !== undefined) {
+        (out as any)[key] = transformed.xs;
       }
+      // останалите breakpoints
       for (const k of bpKeys) {
-        const v = val[k];
+        const v = transformed[k];
         if (v === undefined) continue;
         const mq = theme.breakpoints.up(k);
         out[mq] = mergeDeep(out[mq] || {}, { [key]: v });
       }
     } else {
-      (out as any)[key] = val;
+      (out as any)[key] = transformPropValue(key, raw, theme);
     }
   }
 
@@ -171,12 +288,16 @@ const expandResponsivePerProperty = (obj: CSSObject, theme: LibDevTheme): CSSObj
 
 const normalizeCSSObject = (obj: unknown, theme: LibDevTheme): CSSObject => {
   if (!isObject(obj)) return obj as CSSObject;
-  // 1) spacing shorthand-и
+
+  // 1) shorthand-и p*/m*
   let out = expandSpaceShorthands(obj as CSSObject, theme);
-  // 2) responsive per-property (width: { xs, sm, md }, alignItems: { xs, md }, ...)
+
+  // 2) директни spacing пропове/токени + responsive per-property → @media
   out = expandResponsivePerProperty(out, theme);
+
   // 3) top-level breakpoints + вложени селектори / @media
   out = extractBreakpoints(out, theme);
+
   return out;
 };
 

@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.4.2] - 2025-08-09
+
+### Fixed in 0.4.2
+
+- **sl/tokens:** Added full design token support:
+  - **palette tokens** for color props (`color`, `backgroundColor/bgcolor`, `borderColor`, `outlineColor`, `caretColor`, `fill`, `stroke`) — e.g. `primary.outlinedBorder`, `background.level1` → `var(--color-...))`.
+  - **borderRadius tokens:** `sm|md|lg|xl|2xl|pill|circle` → `var(--radius-*))` (with `pill=9999px`, `circle=50%`).
+  - **boxShadow tokens:** `xs|sm|md|lg|xl` →  var(--shadow-*))`.
+- **aliases:** `bgcolor`/`bg` now map to `backgroundColor`.
+
+> Note: No API changes. This release focuses solely on token/alias compatibility so styles like `borderRadius: "xl"`, `boxShadow: "md"`, and `bgcolor: "background.level1"` apply correctly.
+
 ## [0.4.1] - 2025-08-09
 
 ### Fixed
