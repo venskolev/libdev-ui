@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { Color, Size, Variant, Radius } from "../common.types";
 
 /* ---------------------------------------------
- * 🎯 Мапване на пропсовете към CSS
+ * Мапване на пропсовете към CSS
  * ------------------------------------------- */
 
 const resolveColorVar = (color?: Color | string) => {
@@ -26,7 +26,7 @@ const resolveColorVar = (color?: Color | string) => {
   }
 };
 
-// 📏 Размерни токени (НЕ ПИПАМЕ стойностите)
+// Размерни токени 
 const sizeTokens = (size: Size = "md") => {
   switch (size) {
     case "sm":
@@ -66,7 +66,7 @@ const sizeTokens = (size: Size = "md") => {
   }
 };
 
-// 🎛 Радиус
+// Радиус
 const radiusVar = (r: Radius = "md") => {
   switch (r) {
     case "sm":
@@ -79,7 +79,7 @@ const radiusVar = (r: Radius = "md") => {
   }
 };
 
-// 🎨 Светли дефолти (бял инпут)
+// Светли дефолти (бял инпут)
 const baseVars = {
   bg: "var(--input-bg, #ffffff)",
   bgFilled: "var(--input-bg-filled, #f7f8fa)",
@@ -92,7 +92,7 @@ const baseVars = {
   error: "var(--color-danger, #ef4444)",
 };
 
-// 🧪 Варианти
+// Варианти
 const variantStyles = (variant: Variant = "outlined", color?: Color | string) => {
   const c = resolveColorVar(color);
   switch (variant) {
@@ -137,7 +137,7 @@ const variantStyles = (variant: Variant = "outlined", color?: Color | string) =>
 };
 
 /* ---------------------------------------------
- * 🧱 Styled елементи
+ * Styled елементи
  * ------------------------------------------- */
 
 export interface StyledInputRootProps {
@@ -154,7 +154,7 @@ export interface StyledInputRootProps {
   $isFocused?: boolean;
 }
 
-// 🔲 Root контейнерът носи фона + точната височина
+// Root контейнерът носи фона + точната височина
 export const StyledInputRoot = styled.div<StyledInputRootProps>`
   position: relative;
   display: inline-flex;
@@ -194,7 +194,7 @@ export const StyledInputRoot = styled.div<StyledInputRootProps>`
     `}
 `;
 
-// 🔗 Adornments
+// Adornments
 export const StyledAdornment = styled.div<{ $position: "start" | "end"; $size?: Size }>`
   display: inline-flex;
   align-items: center;
@@ -220,7 +220,7 @@ export const StyledAdornment = styled.div<{ $position: "start" | "end"; $size?: 
         `}
 `;
 
-// ✍️ Реалният input – без фиксирана height; фона е прозрачен
+// Реалният input – без фиксирана height; фона е прозрачен
 export const StyledInputElement = styled.input<{
   $size?: Size;
   $hasStartAdornment?: boolean;
@@ -264,7 +264,7 @@ export const StyledInputElement = styled.input<{
     `}
 `;
 
-// 📝 Textarea – без фиксирана height; фона е прозрачен
+// Textarea – без фиксирана height; фона е прозрачен
 export const StyledTextareaElement = styled.textarea<{
   $size?: Size;
   $hasStartAdornment?: boolean;
@@ -311,7 +311,7 @@ export const StyledTextareaElement = styled.textarea<{
     `}
 `;
 
-// ❌ Clear бутон
+// Clear бутон
 export const StyledClearButton = styled.button<{
   $size?: Size;
   $hasEndAdornment?: boolean;
@@ -360,7 +360,7 @@ export const StyledClearButton = styled.button<{
   }
 `;
 
-// 📦 Вътрешен контейнер – без хор. padding (за да няма двойно)
+// Вътрешен контейнер – без хор. padding (за да няма двойно)
 export const StyledField = styled.div<{
   $size?: Size;
   $hasStartAdornment?: boolean;

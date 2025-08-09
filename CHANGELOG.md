@@ -5,6 +5,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.3.0] - 2025-08-09
+
+### Added in 0.3.0
+
+- **Hooks:** Introduced `useButtonBase` for centralized focus management, keyboard/mouse guards, optional toggle state, and utility props (`getRootProps`, `getButtonProps`, ARIA support).
+- **Button:** Added support for toggleable buttons with `toggleable`, `pressed`, `defaultPressed`, and `onPressedChange` props for true toggle behavior.
+- **Button:** Added `loading` prop with `aria-busy` and interaction guard.
+
+### Changed
+
+- **Button:** Refactored internals to use `useButtonBase` for consistent behavior across future components like `IconButton`, `ToggleButton`, etc.
+
+### Fixed in 0.3.0
+
+- **Button styles:** `color` prop now accepts `Color` or any string (e.g., `var(--brand)`, `#22c55e`, `rgb(...)`) without TypeScript errors.
+
+### Docs
+
+- **Button docs:** Added a new page with TypeScript/JavaScript tabs, live examples, and documentation for variants, sizes, colors, toggle, and loading states.
+- **Hooks docs:** Added a new page for `useButtonBase` with API details and example usage.
+
+### Breaking Changes
+
+- None.
+
 ## [0.2.1] - 2025-08-08
 
 ### Bug Fixes
@@ -17,18 +42,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ## [0.2.0] - 2025-08-08
 
-### Added
+### Added in 0.2.0
 
 - **Input** component with variants (`outlined`, `filled`, `ghost`), sizes (`sm`, `md`, `lg`), colors (`primary`, `secondary`, `success`, `danger`, `warning`, `info` or custom), radius, adornments, multiline support, and clear button.
 - Shared UI tokens: sizing, colors, variants, and radius via `src/components/common.types.ts` across components for consistent typing.
 
 ## [0.1.2] - 2025-08-07
 
-### Changed
+### Updated
 
 - Styles aligned with global CSS variables (from `:root`) to keep theming centralized.
 
-### Fixed
+### Fixed in 0.1.2
 
 - Minor style edge-cases for focus ring and disabled opacity in input fields.
 
