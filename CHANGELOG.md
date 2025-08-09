@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.4.0] - 2025-08-09
+
+### Added in 0.4.0
+
+- **Box:** Introduced the `Box` layout component with `sl` (style layer) prop for theme-aware styling.  
+  Supports objects, arrays, functions with theme context, nested selectors, responsive breakpoints, and spacing shorthands (`p`, `m`, `px`, `py`, etc.).
+- **Style Engine:** Core `sl` resolver extracted to a shared system module, enabling consistent styling across all components.
+
+### Fixed in 0.4.0
+
+- **Button:** Applied mid-cycle fix for export resolution and improved TypeScript type safety when importing from the main `components` index.
+
 ## [0.3.0] - 2025-08-09
 
 ### Added in 0.3.0
