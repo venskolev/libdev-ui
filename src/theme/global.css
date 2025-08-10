@@ -66,4 +66,11 @@
   --shadow-md: var(--ld-shadow-md);
   --shadow-lg: var(--ld-shadow-lg);
   --shadow-xl: var(--ld-shadow-xl);
+
+    /* legacy containers */
+  --ld-container-1: 448px;
+  --ld-container-2: 688px;
+  --ld-container-3: 880px;
+  --ld-container-4: 1136px;
+
 }

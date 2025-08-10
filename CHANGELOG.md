@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.7.0] - 2025-08-10
+
+### Added in 0.7.0
+
+- **Container**: A new layout component that constrains the maximum width of page content and ensures consistent horizontal alignment.  
+  - Supports responsive `size` (1–4) using the new CSS variables `--ld-container-1`..`--ld-container-4`.
+  - Allows horizontal `align` (`left`, `center`, `right`) and integrates with `layoutMixin` for full spacing, sizing, positioning, and overflow control.
+  - Supports polymorphic rendering via `as` and `asChild` props.
+  - Designed to be part of the Layout component family (`Box`, `Flex`, `Grid`, `Section`).
+
 ## [0.6.1] - 2025-08-10
 
 ### Added in 0.6.1
