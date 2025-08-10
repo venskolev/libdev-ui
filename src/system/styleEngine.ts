@@ -297,12 +297,12 @@ const transformPropValue = (prop: string, val: any, theme: LibDevTheme) => {
   return mapDesignToken(prop, scaled);
 };
 
-const expandSpaceShorthands = (obj: CSSObject, theme: LibDevTheme): CSSObject => {
+const expandSpaceShorthands = (obj: CSSObject, _theme: LibDevTheme): CSSObject => {
   const out: CSSObject = { ...obj };
 
+  // ❗️ Не скалираме тук. Само разпъваме шорткъти → real props.
   const apply = (prop: keyof CSSProperties, v: any) => {
-    const tv = transformPropValue(prop as string, v, theme);
-    (out as any)[prop] = tv;
+    (out as any)[prop] = v; // оставяме „суровото“ v
   };
 
   const map: Array<[string, Array<keyof CSSProperties>]> = [
@@ -330,6 +330,7 @@ const expandSpaceShorthands = (obj: CSSObject, theme: LibDevTheme): CSSObject =>
   }
   return out;
 };
+
 
 /** Normalize prop names (aliases) – e.g. bgcolor → backgroundColor */
 const normalizePropName = (prop: string) => PROP_ALIASES[prop] ?? prop;

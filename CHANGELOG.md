@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.5.1] - 2025-08-10
+
+### Fixed
+
+- **Spacing shorthands:** prevent double-scaling for `m*/p*` shorthands. Values now scale exactly once via `theme.spacing()`.
+  - `mt: 20` → `margin-top: 160px` (with spacing(20) = 160)
+  - `marginTop: 20` → `margin-top: 160px`
+  - `mt: "20px"` → `margin-top: 20px` (no scaling for strings)
+
 ## [0.5.0] - 2025-08-10
 
 ### Added
