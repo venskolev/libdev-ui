@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.6.1] - 2025-08-10
+
+### Added in 0.6.1
+
+- **Margin shorthands:** Introduced `m`, `mx`, `my`, `mt`, `mr`, `mb`, `ml` to `CommonLayoutProps`.
+- **layout.mixin:** Responsive CSS mapping for the new margin shorthands (uses `theme.spacing` when available).
+
+### Fixed in 0.6.1
+
+- **DOM leakage:** Added margin shorthands to `STYLE_ONLY_PROPS` filters in **Box**, **Flex**, and **Grid** so they do not appear as DOM attributes.
+- **Grid styles:** Ensured margin shorthands are respected via `applyCommonLayoutStyles` and filtered from the DOM.
+
+### Documentation
+
+- **Box docs:** Updated notes to include margin shorthands (m/mx/my/mt/mr/mb/ml) and responsive behavior.
+
 ## [0.6.0] - 2025-08-10
 
 ### Added in 0.6.0

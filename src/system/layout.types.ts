@@ -5,10 +5,19 @@ import type {
 } from "../components/common.types";
 
 /**
- * Общ layout API за Box/Flex/Grid/Container/Section.
- * Използва глобалните responsive типове от common.types.ts.
+ * Shared layout API for Box/Flex/Grid/Container/Section.
+ * Uses global responsive types from common.types.ts.
  */
 export interface CommonLayoutProps {
+  /** Margin shorthands */
+  m?: ResponsiveSpace;
+  mx?: ResponsiveSpace;
+  my?: ResponsiveSpace;
+  mt?: ResponsiveSpace;
+  mr?: ResponsiveSpace;
+  mb?: ResponsiveSpace;
+  ml?: ResponsiveSpace;
+
   /** Padding shorthands */
   p?: ResponsiveSpace;
   px?: ResponsiveSpace;

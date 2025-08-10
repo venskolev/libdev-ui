@@ -4,25 +4,36 @@ import type { GridProps } from "./Grid.types";
 import { buildResponsiveStyle, buildSpace } from "../../system/responsive";
 import { applyCommonLayoutStyles } from "../../system/layout.mixin";
 
-/** Style-only props that must NOT leak to the DOM */
+/** Пропсове само за стил/поведение, които НЕ трябва да стигат до DOM атрибути */
 const STYLE_ONLY_PROPS = new Set<string>([
-  // polymorphic
+  // полиморфизъм
   "as",
   "component",
 
-  // grid-specific
+  // grid-специфични
   "columns", "rows", "areas", "autoFlow",
   "alignItems", "justifyItems", "alignContent", "justifyContent",
   "gap", "gapX", "gapY",
 
-  // CommonLayoutProps
-  "p","px","py","pt","pr","pb","pl",
-  "width","minWidth","maxWidth","height","minHeight","maxHeight",
-  "position","inset","top","right","bottom","left",
-  "overflow","overflowX","overflowY",
-  "flexBasis","flexShrink","flexGrow",
-  "gridArea","gridColumn","gridColumnStart","gridColumnEnd",
-  "gridRow","gridRowStart","gridRowEnd",
+  // CommonLayoutProps — margin шорткъти
+  "m", "mx", "my", "mt", "mr", "mb", "ml",
+
+  // CommonLayoutProps — padding шорткъти
+  "p", "px", "py", "pt", "pr", "pb", "pl",
+
+  // размери
+  "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight",
+
+  // позициониране
+  "position", "inset", "top", "right", "bottom", "left",
+
+  // overflow
+  "overflow", "overflowX", "overflowY",
+
+  // flex/grid interop
+  "flexBasis", "flexShrink", "flexGrow",
+  "gridArea", "gridColumn", "gridColumnStart", "gridColumnEnd",
+  "gridRow", "gridRowStart", "gridRowEnd",
 ]);
 
 export const StyledGrid = styled("div", {
@@ -30,10 +41,10 @@ export const StyledGrid = styled("div", {
 })<GridProps>`
   display: grid;
 
-  /* Shared layout (padding, sizes, position, overflow, grid/flex interop) */
+  /* Общи layout правила (margin, padding, размери, позициониране, overflow, interop) */
   ${applyCommonLayoutStyles}
 
-  /* Template: columns / rows / areas */
+  /* Шаблони: колони / редове / зони (areas) */
   ${({ columns, theme }) =>
     buildResponsiveStyle(
       columns,
@@ -57,11 +68,11 @@ export const StyledGrid = styled("div", {
       theme
     )}
 
-  /* Auto placement */
+  /* Автоматично подреждане на елементи */
   ${({ autoFlow, theme }) =>
     buildResponsiveStyle(autoFlow, (v) => css`grid-auto-flow: ${v};`, theme)}
 
-  /* Alignment */
+  /* Подравняване */
   ${({ alignItems, theme }) =>
     buildResponsiveStyle(alignItems, (v) => css`align-items: ${v};`, theme)}
 
@@ -74,7 +85,7 @@ export const StyledGrid = styled("div", {
   ${({ justifyContent, theme }) =>
     buildResponsiveStyle(justifyContent, (v) => css`justify-content: ${mapAxisContent(v)};`, theme)}
 
-  /* Gaps */
+  /* Разстояния между клетки */
   ${({ gap, theme }) =>
     buildResponsiveStyle(
       gap,
@@ -97,13 +108,13 @@ export const StyledGrid = styled("div", {
     )}
 `;
 
-/* Helpers */
+/* Хелпъри */
 function toTemplateAreas(value: string | string[]) {
   if (Array.isArray(value)) {
-    // Each item is a row, wrap with quotes and join with a space (CSS allows newline or space)
+    // Масив: всеки елемент е ред. Слагаме кавички и свързваме с интервал (CSS позволява и нов ред).
     return value.map((row) => `"${row}"`).join(" ");
   }
-  // If it's a string, assume author provided correct quotes/newlines
+  // Низ: приемаме, че авторът е подал коректно кавички/нови редове.
   return value as string;
 }
 
@@ -111,13 +122,9 @@ function mapAxisContent(
   v: "start" | "center" | "end" | "stretch" | "between" | "around" | "evenly"
 ) {
   switch (v) {
-    case "between":
-      return "space-between";
-    case "around":
-      return "space-around";
-    case "evenly":
-      return "space-evenly";
-    default:
-      return v;
+    case "between": return "space-between";
+    case "around":  return "space-around";
+    case "evenly":  return "space-evenly";
+    default:        return v;
   }
 }

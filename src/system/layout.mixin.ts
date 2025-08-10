@@ -8,8 +8,7 @@ import {
 } from "./responsive";
 
 /**
- * Инструмент за общи layout пропсове (padding, width/height, позициониране, overflow, flex/grid interop).
- * Връща Emotion CSS блок, който може да се включи в styled компоненти.
+ * Mixin for common layout props (margin, padding, sizes, positioning, overflow, flex/grid interop).
  */
 export function layoutMixin(
   props: (CommonLayoutProps & { theme?: ThemeLike }) | undefined
@@ -18,6 +17,9 @@ export function layoutMixin(
 
   const {
     theme,
+
+    // margin shorthands
+    m, mx, my, mt, mr, mb, ml,
 
     // padding shorthands
     p, px, py, pt, pr, pb, pl,
@@ -38,10 +40,19 @@ export function layoutMixin(
   } = props;
 
   return css`
+    /* -------- Margin -------- */
+    ${buildResponsiveStyle(m,  (v) => css`margin: ${buildSpace(theme, v)};`, theme)}
+    ${buildResponsiveStyle(mx, (v) => css`margin-left: ${buildSpace(theme, v)}; margin-right: ${buildSpace(theme, v)};`, theme)}
+    ${buildResponsiveStyle(my, (v) => css`margin-top: ${buildSpace(theme, v)};  margin-bottom: ${buildSpace(theme, v)};`, theme)}
+    ${buildResponsiveStyle(mt, (v) => css`margin-top: ${buildSpace(theme, v)};`, theme)}
+    ${buildResponsiveStyle(mr, (v) => css`margin-right: ${buildSpace(theme, v)};`, theme)}
+    ${buildResponsiveStyle(mb, (v) => css`margin-bottom: ${buildSpace(theme, v)};`, theme)}
+    ${buildResponsiveStyle(ml, (v) => css`margin-left: ${buildSpace(theme, v)};`, theme)}
+
     /* -------- Padding -------- */
     ${buildResponsiveStyle(p,  (v) => css`padding: ${buildSpace(theme, v)};`, theme)}
     ${buildResponsiveStyle(px, (v) => css`padding-left: ${buildSpace(theme, v)}; padding-right: ${buildSpace(theme, v)};`, theme)}
-    ${buildResponsiveStyle(py, (v) => css`padding-top: ${buildSpace(theme, v)}; padding-bottom: ${buildSpace(theme, v)};`, theme)}
+    ${buildResponsiveStyle(py, (v) => css`padding-top: ${buildSpace(theme, v)};  padding-bottom: ${buildSpace(theme, v)};`, theme)}
     ${buildResponsiveStyle(pt, (v) => css`padding-top: ${buildSpace(theme, v)};`, theme)}
     ${buildResponsiveStyle(pr, (v) => css`padding-right: ${buildSpace(theme, v)};`, theme)}
     ${buildResponsiveStyle(pb, (v) => css`padding-bottom: ${buildSpace(theme, v)};`, theme)}
@@ -57,15 +68,12 @@ export function layoutMixin(
 
     /* -------- Positioning -------- */
     ${buildResponsiveStyle(position, (v) => css`position: ${v};`, theme)}
-
-    /* inset като шорткът за top,right,bottom,left */
     ${buildResponsiveStyle(inset, (v) => css`
       top: ${buildLen(v)};
       right: ${buildLen(v)};
       bottom: ${buildLen(v)};
       left: ${buildLen(v)};
     `, theme)}
-
     ${buildResponsiveStyle(top,    (v) => css`top: ${buildLen(v)};`, theme)}
     ${buildResponsiveStyle(right,  (v) => css`right: ${buildLen(v)};`, theme)}
     ${buildResponsiveStyle(bottom, (v) => css`bottom: ${buildLen(v)};`, theme)}
@@ -91,9 +99,6 @@ export function layoutMixin(
   `;
 }
 
-/**
- * Хелпър за включване директно в styled компонент:
- *   ${applyCommonLayoutStyles};
- */
+/** Helper for styled-components usage */
 export const applyCommonLayoutStyles = (props: CommonLayoutProps & { theme?: ThemeLike }) =>
   layoutMixin(props);
