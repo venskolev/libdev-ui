@@ -8,7 +8,8 @@ export { Box } from "./Box/Box";
 export type { BoxProps } from "./Box/Box.types";
 export * from "./Flex";
 export * from "./Grid";
-export * from "./Container";
+export * from "./Container/Container";
+export type { ContainerProps, ContainerSize, ContainerAlign } from "./Container/Container.types";
 
 // Hooks
 export * from "../hooks/useButtonBase";

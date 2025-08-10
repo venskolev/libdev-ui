@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.7.2] - 2025-08-10
+
+### Fixed in 0.7.2
+
+- **Container**: Now properly exported from the main package entry (`src/index.ts`), allowing it to be imported via `import { Container } from "@libdev-ui/base"`.
+- Added explicit export of `Container` and its types (`ContainerProps`, `ContainerSize`, `ContainerAlign`) from the correct path to ensure availability in the built `dist` output.
+
 ## [0.7.1] - 2025-08-10
 
 ### Fixed in 0.7.1
