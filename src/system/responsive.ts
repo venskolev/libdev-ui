@@ -1,3 +1,6 @@
+// src/system/responsive.ts
+// LibDev UI – Custom React UI components
+
 import { css } from "@emotion/react";
 import type {
   BreakpointKey,

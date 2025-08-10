@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.7.1] - 2025-08-10
+
+### Fixed in 0.7.1
+
+- **Container**: Removed local `Responsive` type definition in `Container.types.ts` to avoid conflicts with the global `Responsive` type from `common.types.ts`.
+- Updated `Container` to import and use the global `Responsive` type, ensuring full compatibility with `system/responsive.ts` and preventing duplicate export errors in `components/index.ts`.
+
 ## [0.7.0] - 2025-08-10
 
 ### Added in 0.7.0

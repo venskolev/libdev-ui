@@ -1,12 +1,9 @@
-// src/components/Container/Container.styles.ts
+// src/components/Container/Container.types.ts
 // LibDev UI – Custom React UI components
 
 import type React from "react";
 import type { CommonLayoutProps } from "../../system/layout.types";
-
-
-// Локален Responsive тип, съвместим с нашата responsive система
-export type Responsive<T> = T | Partial<Record<string, T>>;
+import type { Responsive } from "../common.types"; // <-- Използваме глобалния тип
 
 // Допустими размери на контейнера
 export type ContainerSize = "1" | "2" | "3" | "4";
