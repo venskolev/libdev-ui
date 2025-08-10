@@ -9,6 +9,7 @@ export const Box: React.FC<BoxProps> = ({
   sl,
   children,
   style,
+  as: _asIgnored, // ← 1) поглъщаме външния `as`
   ...rest
 }) => {
   const { resolve } = useStyleResolver();
@@ -16,10 +17,10 @@ export const Box: React.FC<BoxProps> = ({
 
   return (
     <StyledBox
-      as={component as any}
+      {...rest}                 // ← 2) rest преди нашето `as=...`
+      as={component as any}     //    нашият `as` винаги печели
       $styles={resolved}
       style={style}
-      {...rest}
     >
       {children}
     </StyledBox>

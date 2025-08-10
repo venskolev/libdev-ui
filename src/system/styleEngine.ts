@@ -1,13 +1,12 @@
-// src/system/styleEngine.ts
 import type { CSSProperties } from "react";
 
-/** Breakpoint ключове */
+/** Breakpoint keys */
 export type BreakpointKey = "xs" | "sm" | "md" | "lg" | "xl";
 
-/** value или map по breakpoint-и */
+/** Single value or per-breakpoint map */
 export type Responsive<T> = T | Partial<Record<BreakpointKey, T>>;
 
-/** Мини тема за spacing и breakpoints */
+/** Minimal theme for spacing & breakpoints */
 export interface LibDevTheme {
   breakpoints: {
     values: Record<BreakpointKey, number>;
@@ -16,7 +15,7 @@ export interface LibDevTheme {
   spacing: (n: number) => number; // 1 -> 8 => 8px
 }
 
-/** Дефолтна тема */
+/** Default theme */
 export const defaultTheme: LibDevTheme = {
   breakpoints: {
     values: { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 },
@@ -29,10 +28,10 @@ export const defaultTheme: LibDevTheme = {
 };
 
 /**
- * Разширен CSS обект:
- * - всяко CSS свойство приема Responsive<T>
- * - позволяваме вложени селектори / @media чрез indexer
- * - spacing shorthand-и с Responsive<number|string>
+ * Extended CSS object:
+ * - every CSS property may be Responsive<T>
+ * - nested selectors / at-rules allowed
+ * - spacing shorthands accept Responsive<number|string>
  */
 export type CSSObject = {
   [K in keyof CSSProperties]?: Responsive<CSSProperties[K]>;
@@ -57,7 +56,7 @@ export type CSSObject = {
   ml?: Responsive<number | string>;
 };
 
-/** Позволени видове стойности за sl */
+/** Allowed values for sl */
 export type StyleArg =
   | CSSObject
   | null
@@ -99,15 +98,14 @@ const hasBreakpointKeys = (v: unknown): v is Partial<Record<BreakpointKey, any>>
   !Array.isArray(v) &&
   bpKeys.some((k) => Object.prototype.hasOwnProperty.call(v as object, k));
 
-/* ---------- проп алиаси (MUI-стил) ---------- */
-
+/* ---------- prop aliases (MUI-like) ---------- */
 const PROP_ALIASES: Record<string, string> = {
   bgcolor: "backgroundColor",
   bg: "backgroundColor",
+  radius: "borderRadius", // allow sl={{ radius: "xl" }}
 };
 
-/* ---------- цветови/палетни пропове ---------- */
-
+/* ---------- color-ish props ---------- */
 const COLOR_PROPS = new Set([
   "color",
   "background",
@@ -119,63 +117,149 @@ const COLOR_PROPS = new Set([
   "stroke",
 ]);
 
-/* ---------- дизайн токени ---------- */
+/* ---------- design tokens ---------- */
 
 const RADIUS_TOKENS = new Set(["sm", "md", "lg", "xl", "2xl", "pill", "circle"]);
 const SHADOW_TOKENS = new Set(["xs", "sm", "md", "lg", "xl"]);
 
-/** конструира var() с optional fallback верига */
-const varChain = (primary: string, ...fallbacks: string[]) => {
-  if (!fallbacks.length) return `var(${primary})`;
-  // var(--a, var(--b, var(--c)))
-  return `var(${primary}, ${varChain(fallbacks[0], ...fallbacks.slice(1))})`;
-};
-
 const isPaletteToken = (v: unknown): v is string =>
   typeof v === "string" && v.includes(".");
 
-const toJoyPaletteVar = (token: string) =>
-  `--joy-palette-${token.replace(/\./g, "-")}`;
+/** our LD vars */
+const toLdColorVar = (token: string) => `--ld-color-${token.replace(/\./g, "-")}`;
+const toLdRadiusVar = (token: string) => `--ld-radius-${token}`;
+const toLdShadowVar = (token: string) => `--ld-shadow-${token}`;
 
-/** map стойности по property към съответните CSS var токени */
-const mapDesignToken = (prop: string, val: any): any => {
-  if (val == null) return val;
+/** legacy bridges (if present in some apps) */
+const toLegacyColorVar = (token: string) => `--color-${token.replace(/\./g, "-")}`;
+const toLegacyRadiusVar = (token: string) => `--radius-${token}`;
+const toLegacyShadowVar = (token: string) => `--shadow-${token}`;
 
-  // border radius токени
-  if (
-    (prop === "borderRadius" ||
-      prop === "borderTopLeftRadius" ||
-      prop === "borderTopRightRadius" ||
-      prop === "borderBottomLeftRadius" ||
-      prop === "borderBottomRightRadius") &&
-    typeof val === "string"
-  ) {
-    if (val === "pill") return "9999px";
-    if (val === "circle") return "50%";
-    if (RADIUS_TOKENS.has(val)) {
-      // Joy първо, после нашия
-      return varChain(`--joy-radius-${val}`, `--radius-${val}`);
+/** sensible defaults so things still render without global CSS */
+const DEFAULT_RADII: Record<string, string> = {
+  sm: "4px",
+  md: "8px",
+  lg: "16px",
+  xl: "20px",
+  "2xl": "24px",
+  pill: "9999px",
+  circle: "50%",
+};
+
+const DEFAULT_SHADOWS: Record<string, string> = {
+  xs: "0 1px 2px rgba(0,0,0,.06)",
+  sm: "0 1px 3px rgba(0,0,0,.10)",
+  md: "0 4px 12px rgba(0,0,0,.12)",
+  lg: "0 8px 24px rgba(0,0,0,.16)",
+  xl: "0 14px 40px rgba(0,0,0,.20)",
+};
+
+const DEFAULT_COLORS: Record<string, string> = {
+  "background.level1": "#0e0e12",
+  primary: "#3b82f6",
+  "primary.hover": "#2563eb",
+  secondary: "#e5e7eb",
+  // extend as needed
+};
+
+/* ---------- FIX: varChain must NOT wrap literals ---------- */
+
+const isCustomPropName = (s: string) => s.startsWith("--");
+
+const CSS_COLOR_KEYWORDS = new Set([
+  "black","silver","gray","white","maroon","red","purple","fuchsia","green","lime",
+  "olive","yellow","navy","blue","teal","aqua","orange","transparent","currentcolor",
+  "inherit","initial","revert","unset","aliceblue","antiquewhite"
+]);
+
+/** var() chain, но НИКОГА не увива литерали (white, 20px, #fff, rgb(...)) */
+const varChain = (primary: string, ...fallbacks: string[]) => {
+  let tail = "";
+
+  // build fallback chain from right to left
+  for (let i = fallbacks.length - 1; i >= 0; i--) {
+    const f = fallbacks[i];
+    if (!f) continue;
+
+    // ако е custom property → var(--x[, tail]); иначе е литерал → просто стойност
+    if (isCustomPropName(f)) {
+      tail = `var(${f}${tail ? `, ${tail}` : ""})`;
+    } else {
+      tail = f;
     }
   }
 
-  // boxShadow токени
-  if (prop === "boxShadow" && typeof val === "string" && SHADOW_TOKENS.has(val)) {
-    return varChain(`--joy-shadow-${val}`, `--shadow-${val}`);
+  return `var(${primary}${tail ? `, ${tail}` : ""})`;
+};
+
+/** map values per property to our CSS variables */
+const mapDesignToken = (prop: string, val: any): any => {
+  if (val == null) return val;
+  if (typeof val !== "string") return val;
+  const raw = val.trim();
+
+  // already CSS var or raw css color/value – keep as is
+  if (
+    raw.startsWith("var(") ||
+    raw.startsWith("#") ||
+    raw.startsWith("rgb(") ||
+    raw.startsWith("hsl(")
+  ) {
+    return val;
   }
 
-  // палетни токени за цветови пропове
-  if (COLOR_PROPS.has(prop) && isPaletteToken(val)) {
-    const joyVar = toJoyPaletteVar(val);
-    // fallback към нашата схема (пример: primary.solidBg → --color-primary-solidBg)
-    const ours = `--color-${val.replace(/\./g, "-")}`;
-    return varChain(joyVar, ours);
+  // ---------------- RADIUS TOKENS ----------------
+  if (
+    prop === "borderRadius" ||
+    prop === "borderTopLeftRadius" ||
+    prop === "borderTopRightRadius" ||
+    prop === "borderBottomLeftRadius" ||
+    prop === "borderBottomRightRadius"
+  ) {
+    if (raw === "pill") return "9999px";
+    if (raw === "circle") return "50%";
+    if (RADIUS_TOKENS.has(raw)) {
+      const fb = DEFAULT_RADII[raw] ?? raw; // e.g. "20px"
+      // Вече няма да увиваме литерала във var()
+      return varChain(toLdRadiusVar(raw), toLegacyRadiusVar(raw), fb);
+    }
+    return val; // not a token
   }
 
-  // ако стойността вече е var(...) или нормален CSS цвят/стойност — оставяме
+  // ---------------- SHADOW TOKENS ----------------
+  if (prop === "boxShadow" && SHADOW_TOKENS.has(raw)) {
+    const fb = DEFAULT_SHADOWS[raw] ?? "none";
+    return varChain(toLdShadowVar(raw), toLegacyShadowVar(raw), fb);
+  }
+
+  // ---------------- COLOR TOKENS ----------------
+  if (COLOR_PROPS.has(prop)) {
+    // директна CSS ключова дума → остави
+    if (CSS_COLOR_KEYWORDS.has(raw.toLowerCase())) return raw;
+
+    if (isPaletteToken(raw)) {
+      const ld = toLdColorVar(raw);
+      const legacy = toLegacyColorVar(raw);
+      const fb = DEFAULT_COLORS[raw]; // може да липсва
+      return fb ? varChain(ld, legacy, fb) : varChain(ld, legacy);
+    }
+
+    // bare role като "primary" → пробваме токени
+    const ldBase = `--ld-color-${raw}`;
+    const legacyBase = `--color-${raw}`;
+    const fbBase = DEFAULT_COLORS[raw];
+    if (fbBase) {
+      return varChain(ldBase, legacyBase, fbBase);
+    }
+
+    // не е известен token (пример: "white") → върни директно стойността
+    return raw;
+  }
+
   return val;
 };
 
-/* ----- spacing скалиране и проп мапинг ----- */
+/* ----- spacing scaling & mapping ----- */
 
 const SPACING_PROPS = new Set<keyof CSSProperties>([
   "margin",
@@ -213,8 +297,6 @@ const transformPropValue = (prop: string, val: any, theme: LibDevTheme) => {
   return mapDesignToken(prop, scaled);
 };
 
-
-
 const expandSpaceShorthands = (obj: CSSObject, theme: LibDevTheme): CSSObject => {
   const out: CSSObject = { ...obj };
 
@@ -249,14 +331,12 @@ const expandSpaceShorthands = (obj: CSSObject, theme: LibDevTheme): CSSObject =>
   return out;
 };
 
-/**
- * Нормализира имена на пропове (алиаси) – например bgcolor → backgroundColor
- */
+/** Normalize prop names (aliases) – e.g. bgcolor → backgroundColor */
 const normalizePropName = (prop: string) => PROP_ALIASES[prop] ?? prop;
 
 /**
- * Разширява responsive стойности per-property и прилага
- * токени/скалиране върху стойностите + прилага алиаси на пропове.
+ * Expand per-property responsive values and apply
+ * tokens/spacing scaling + aliases.
  */
 const expandResponsivePerProperty = (obj: CSSObject, theme: LibDevTheme): CSSObject => {
   const out: CSSObject = {};
@@ -267,11 +347,9 @@ const expandResponsivePerProperty = (obj: CSSObject, theme: LibDevTheme): CSSObj
 
     if (hasBreakpointKeys(raw)) {
       const transformed = transformPropValue(key, raw, theme) as Record<string, any>;
-      // base от xs (ако има)
       if (transformed.xs !== undefined) {
         (out as any)[key] = transformed.xs;
       }
-      // останалите breakpoints
       for (const k of bpKeys) {
         const v = transformed[k];
         if (v === undefined) continue;
@@ -289,13 +367,13 @@ const expandResponsivePerProperty = (obj: CSSObject, theme: LibDevTheme): CSSObj
 const normalizeCSSObject = (obj: unknown, theme: LibDevTheme): CSSObject => {
   if (!isObject(obj)) return obj as CSSObject;
 
-  // 1) shorthand-и p*/m*
+  // 1) spacing shorthands
   let out = expandSpaceShorthands(obj as CSSObject, theme);
 
-  // 2) директни spacing пропове/токени + responsive per-property → @media
+  // 2) direct props (tokens/spacing) + per-prop responsive → @media
   out = expandResponsivePerProperty(out, theme);
 
-  // 3) top-level breakpoints + вложени селектори / @media
+  // 3) top-level breakpoints + nested selectors / @media
   out = extractBreakpoints(out, theme);
 
   return out;
@@ -311,7 +389,7 @@ const extractBreakpoints = (obj: CSSObject, theme: LibDevTheme): CSSObject => {
       const mq = theme.breakpoints.up(key as BreakpointKey);
       out[mq] = mergeDeep(out[mq] || {}, normalizeCSSObject(val, theme));
     } else if (isObject(val)) {
-      // вложени селектори / @media
+      // nested selectors / @media
       out[key] = normalizeCSSObject(val, theme);
     } else {
       (out as any)[key] = val;
@@ -322,7 +400,7 @@ const extractBreakpoints = (obj: CSSObject, theme: LibDevTheme): CSSObject => {
 
 /* --------------- public API --------------- */
 
-/** Резолвва sl (обект | масив | функция) до финален CSSObject */
+/** Resolve sl (object | array | function) into final CSSObject */
 export const resolveSl = (
   sl: SlProp,
   theme: LibDevTheme = defaultTheme

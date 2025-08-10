@@ -3,14 +3,23 @@
     "target": "ES2017",
     "module": "ESNext",
     "jsx": "react-jsx",
+
     "declaration": true,
     "declarationDir": "dist",
     "outDir": "dist",
+
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
-     "jsxImportSource": "@emotion/react",
-    "types": ["@emotion/react"]
+
+    "jsxImportSource": "@emotion/react",
+
+    "types": ["node", "@emotion/react"]
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "tsup.config.ts"
+  ],
+  "exclude": ["dist"]
 }

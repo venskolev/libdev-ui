@@ -1,6 +1,6 @@
 {
   "name": "@libdev-ui/base",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Custom React UI components by LibDev",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -11,13 +11,14 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "default": "./dist/index.mjs"
-    },
-    "./styles.css": "./dist/index.css"
+    }
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "**/styles/injectTokens.*",
+    "**/*.css"
+  ],
   "files": [
     "dist",
-    "src/theme/global.css",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
@@ -30,25 +31,33 @@
     "release:minor": "npm version minor -m \"chore(release): %s\" && pnpm build && npm publish --access public",
     "release:major": "npm version major -m \"chore(release): %s\" && pnpm build && npm publish --access public"
   },
-  "keywords": ["react", "ui", "libdev", "components"],
+  "keywords": [
+    "react",
+    "ui",
+    "libdev",
+    "components"
+  ],
   "author": "WebDigiTech - Ventsislav Kolev",
   "license": "MIT",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
+    "@emotion/react": "^11.0.0",
+    "@emotion/styled": "^11.0.0",
     "@mui/material": "^7.0.0",
     "framer-motion": "^12.0.0",
-    "@emotion/react": "^11.0.0",
-    "@emotion/styled": "^11.0.0"
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "@mui/material": "^7.3.1",
-    "framer-motion": "^12.23.12",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.1",
+    "@types/node": "^24.2.1",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "framer-motion": "^12.23.12",
     "tsup": "^8.5.0",
     "typescript": "^5.3.3"
   }

@@ -5,6 +5,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.5.0] - 2025-08-10
+
+### Added
+
+- **Runtime token injection:** tokens are injected from `global.css` at import time (generated injector), so consumers do not need to import any CSS.
+- **Semantic `boxShadow` support:** `xs | sm | md | lg | xl` mapped to CSS variables with sensible fallbacks.
+
+### Changed
+
+- **Shadows:** strengthened values for dark-friendly rendering:
+
+  ```css
+  --ld-shadow-xs: 0 1px 2px rgba(0,0,0,.50);
+  --ld-shadow-sm: 0 1px 3px rgba(0,0,0,.60);
+  --ld-shadow-md: 0 4px 12px rgba(0,0,0,.70);
+  --ld-shadow-lg: 0 8px 24px rgba(0,0,0,.80);
+  --ld-shadow-xl: 0 14px 40px rgba(0,0,0,.90);
+
+- **styleEngine / `varChain`:** safe var() chaining that never wraps literals (e.g. `white`, `20px`, `#fff`, `rgb(...)`).
+  
+- **Token mapping:** improved mapping for `color` and `borderRadius`:
+  - CSS keywords are kept as-is (e.g. `white`).
+  - Tokens map to `--ld-*` with valid fallbacks (no `var(literal)`).
+- **Aliases:** `bgcolor/bg` → `backgroundColor` (coverage improved).
+
+Aliases: bgcolor/bg → backgroundColor (coverage improved).
+
+### Fixed in 0.5.0
+
+- **DevTools strike-through:** removed invalid constructs like `var(white)` / `var(20px)` so properties now apply correctly.
+- **Invisible shadows on dark backgrounds:** shadows are now clearly visible (previous `lg`/`xl` were too subtle).
+
+> **Note:** No breaking changes. Consumers don’t need to import CSS manually.
+
 ## [0.4.2] - 2025-08-09
 
 ### Fixed in 0.4.2
@@ -47,7 +81,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - **Button:** Added support for toggleable buttons with `toggleable`, `pressed`, `defaultPressed`, and `onPressedChange` props for true toggle behavior.
 - **Button:** Added `loading` prop with `aria-busy` and interaction guard.
 
-### Changed
+### Changed in 0.3.0
 
 - **Button:** Refactored internals to use `useButtonBase` for consistent behavior across future components like `IconButton`, `ToggleButton`, etc.
 
