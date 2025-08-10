@@ -1,4 +1,4 @@
-# @libdev-ui/base
+# LibDev UI — Base
 
 Modern React UI component library built for speed, consistency, and developer experience.
 
@@ -8,201 +8,104 @@ Modern React UI component library built for speed, consistency, and developer ex
 - **Accessible by default** — ARIA + keyboard interactions
 - **Production-ready** — lean styles, minimal runtime overhead
 
----
+Includes core building blocks (Box, Button, Input) and layout primitives (Flex, Grid) with a shared **responsive** system.
 
 ## Installation
 
 ```bash
-# npm
-npm install @libdev-ui/base
+# with pnpm
+pnpm add @libdev-ui/base 
 
-# pnpm
-pnpm add @libdev-ui/base
+# with yarn
+yarn add @libdev-ui/base 
+
+# with npm
+npm i @libdev-ui/base 
 ```
 
-### Peer dependencies
-
-LibDev UI uses Emotion for styling and Framer Motion for motion-enabled components.
-
-```bash
-pnpm add @emotion/react @emotion/styled framer-motion
-```
-
-> If you don’t use motion props, Framer Motion is still required currently because `Button` wraps `motion.button`. A separate `ButtonMotion` will be provided later.
-
----
-
-## Quick Start
+## Quick start
 
 ```tsx
-import React, { useState } from "react";
-import { Button, AutoSuggest, Input } from "@libdev-ui/base";
+import * as React from "react";
+import { ThemeProvider } from "@emotion/react";
+import { defaultTheme, Box, Flex, Grid, Button, Input } from "@libdev-ui/base";
 
-export default function App() {
-  const [fruit, setFruit] = useState("");
-
+export default function App(): JSX.Element {
   return (
-    <div style={{ display: "grid", gap: 16, maxWidth: 520 }}>
-      {/* Button */}
-      <Button color="primary" variant="filled">Click Me</Button>
-
-      {/* AutoSuggest */}
-      <AutoSuggest
-        options={[
-          { label: "Apple",      value: "apple" },
-          { label: "Banana",     value: "banana" },
-          { label: "Strawberry", value: "strawberry" },
-        ]}
-        value={fruit}
-        onChange={setFruit}
-        placeholder="Start typing..."
-      />
-
-      {/* Input */}
-      <Input placeholder="Your name" showClearButton />
-    </div>
+    <ThemeProvider theme={defaultTheme}>
+      <Box p={{ xs: 8, md: 16 }}>
+        <Flex direction={{ xs: "column", md: "row" }} gap={{ xs: 8, md: 16 }}>
+          <Input placeholder="Email" />
+          <Button>Send</Button>
+        </Flex>
+        <Grid columns={{ xs: 2, md: 4 }} gap={12} mt={16}>
+          {/* ... */}
+        </Grid>
+      </Box>
+    </ThemeProvider>
   );
 }
 ```
 
----
+## Responsive props
 
-## Theming (CSS variables)
+All core layout props support breakpoint-aware values using this pattern:
 
-All components read design tokens from global CSS variables. Add these to your `global.css` (values are examples):
-
-```css
-:root {
-  /* brand colors */
-  --color-primary:  #3b82f6;
-  --color-secondary:#64748b;
-  --color-success:  #22c55e;
-  --color-danger:   #ef4444;
-  --color-warning:  #f59e0b;
-  --color-info:     #0ea5e9;
-
-  /* radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-}
+```ts
+type BreakpointKey = "xs" | "sm" | "md" | "lg" | "xl";
+type Responsive<T> = T | Partial<Record<BreakpointKey, T>>;
 ```
 
-> You can also pass custom colors directly (e.g., `color="var(--brand-accent)"`, `color="#22c55e"`).
+Examples:
 
----
+```tsx
+<Flex direction={{ xs: "column", md: "row" }} gap={{ xs: 8, md: 16 }} />
+<Box width={{ xs: "100%", md: 480 }} p={{ xs: 8, md: 16 }} />
+<Grid columns={{ xs: 2, md: 4 }} gapY={{ xs: 8, md: 12 }} />
+```
+
+Numeric spacing values use the theme spacing scale (`theme.spacing(n)`) when available; otherwise numbers are interpreted as **px**.
+
+## Polymorphic components
+
+Use `component?: ElementType` to change the rendered element:
+
+```tsx
+<Flex component="span" />
+<Grid component="section" />
+<Box component={MyCustomLink} />
+```
+
+Internally, the `as` prop is set only when a custom `component` is provided and is **not forwarded** to the DOM by default.
 
 ## Components
 
-### Button
+- **Box** — basic container with Style Layer (`sl`) support and shared layout props.
+- **Flex** — flex layout container (`direction`, `align`, `justify`, `wrap`, `gap/gapX/gapY`) + shared layout props.
+- **Grid** — CSS Grid container (`columns`, `rows`, `areas`, `autoFlow`, alignment, gaps) + shared layout props.
+- **Button**, **Input**, **AutoSuggest** — standard form controls.
+- **Hooks**: `useButtonBase`, `useInputBase`, `useStyleResolver`.
 
-A versatile button driven by the shared `useButtonBase` hook.
+## Docs
 
-```tsx
-<Button variant="filled"  color="primary">Primary</Button>
-<Button variant="outlined" color="success">Outlined</Button>
-<Button variant="ghost"    color="#22c55e">Ghost (HEX)</Button>
+- `docs/components/flex.mdx` — Flex docs with TS/JS examples.
+- `docs/components/grid.mdx` — Grid docs with TS/JS examples.
 
-<Button loading>Loading…</Button>
-<Button disabled>Disabled</Button>
-
-{/* Toggle behavior */}
-function ToggleExample() {
-  const [pressed, setPressed] = React.useState(false);
-  return (
-    <Button toggleable pressed={pressed} onPressedChange={setPressed}>
-      {pressed ? "On" : "Off"}
-    </Button>
-  );
-}
-```
-
-Props highlights:
-
-- `variant`: `"filled" | "outlined" | "ghost"` (default: `"filled"`)
-- `color`: `"primary" | "secondary" | "success" | "danger" | "warning" | "info" | string"`
-- `size`: `"sm" | "md" | "lg"` (default: `"md"`)
-- `radius`: `"sm" | "md" | "lg"` (default: `"md"`)
-- `loading`, `disabled`, `preventFocusOnPress`, `toggleable`, `pressed`, `defaultPressed`, `onPressedChange`
-
-### Input
-
-A highly customizable input with variants, sizes, colors, adornments and multiline.
-
-```tsx
-<Input placeholder="Outlined (default)" variant="outlined" />
-<Input placeholder="Filled" variant="filled" />
-<Input placeholder="Ghost" variant="ghost" />
-
-<Input placeholder="Small"  size="sm" />
-<Input placeholder="Medium" size="md" />
-<Input placeholder="Large"  size="lg" />
-```
-
-### AutoSuggest
-
-Combo-box style suggestions with controlled/uncontrolled value, clear behavior and custom options.
-
-```tsx
-const options = [
-  { label: "Apple", value: "apple" },
-  { label: "Orange", value: "orange" },
-  { label: "Mango", value: "mango" },
-];
-
-<AutoSuggest
-  options={options}
-  value={value}
-  onChange={setValue}
-  placeholder="Select a fruit"
-/>
-```
-
----
-
-## Hooks
-
-### `useButtonBase`
-
-Centralized logic for all button-like components (focus handling, accessibility, optional toggle, `getRootProps()` / `getButtonProps()`).
-
-```tsx
-import { useButtonBase } from "@libdev-ui/base/hooks";
-
-function IconButton(props) {
-  const { getRootProps, getButtonProps } = useButtonBase(props);
-  return (
-    <span {...getRootProps()} className="icon-button-root">
-      <button {...getButtonProps()} className="icon-button">
-        {props.children}
-      </button>
-    </span>
-  );
-}
-```
-
----
-
-## What’s new in 0.3.0
-
-- **New hook:** `useButtonBase` with `getRootProps` / `getButtonProps`, ARIA guards, and optional toggle state.
-- **Button:** added `toggleable`, `pressed`, `defaultPressed`, `onPressedChange`, and `loading`.
-- **Button styles:** `color` now accepts palette tokens **or** custom strings (e.g., `var(--brand)`, `#22c55e`).
-
-See full changes in [`CHANGELOG.md`](./CHANGELOG.md).
-
----
-
-## Development
+## Contributing
 
 ```bash
-pnpm install
-pnpm build        # tsup
-pnpm dev          # if you have a local playground
-# Docs (if present in this repo)
-pnpm -C libdev-docs build
-pnpm -C libdev-docs serve
+pnpm i
+pnpm build
+pnpm test # (if tests exist)
 ```
+
+## Development notes
+
+- The shared responsive engine lives in `src/system/`:
+  - `responsive.ts` — media query helpers and value converters.
+  - `layout.types.ts` — `CommonLayoutProps` definition.
+  - `layout.mixin.ts` — `applyCommonLayoutStyles` mixin used by Box/Flex/Grid.
+- Global types are in `src/components/common.types.ts`.
 
 ---
 

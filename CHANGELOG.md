@@ -5,9 +5,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.6.0] - 2025-08-10
+
+### Added in 0.6.0
+
+- **Global responsive system**
+  - `src/components/common.types.ts`: added `BreakpointKey`, `Responsive<T>`, `CSSLength`, `Space`, `ResponsiveSpace`.
+  - `src/system/responsive.ts`: media query helpers (`getMediaQuery`), value mappers (`toSpace`, `toCssLength`), and `buildResponsiveStyle`.
+  - `src/system/layout.types.ts`: `CommonLayoutProps` shared across layout components.
+  - `src/system/layout.mixin.ts`: `layoutMixin` / `applyCommonLayoutStyles` to translate common layout props into CSS.
+- **New components**
+  - `Flex`: responsive flex container with `direction`, `align`, `justify`, `wrap`, `gap`, `gapX`, `gapY` + `CommonLayoutProps`.
+  - `Grid`: responsive CSS Grid container with `columns`, `rows`, `areas`, `autoFlow`, alignment props, and gaps + `CommonLayoutProps`.
+
+### Changed in 0.6.0
+
+- **Box**: adopted the shared responsive system via `applyCommonLayoutStyles`. Now supports `CommonLayoutProps` responsively.
+- **Polymorphic rendering**:
+  - `Box` and `Flex` use `component?: ElementType` for polymorphic roots. Internal `as` is set only when `component` is provided and differs from `"div"`.
+  - `shouldForwardProp` guards were added to prevent style-only props from leaking into the DOM.
+
+### Fixed in 0.6.0
+
+- Prevented leaking of style-only props to DOM, e.g. `direction="[object Object]"` or `as="div"`.
+- Consistent gap handling for numeric values using the theme spacing scale when available.
+
+### Migration notes
+
+- Prefer `component` over `as` for polymorphic usage:
+
+  ```tsx
+  // Before (not recommended)
+  // <Flex as="span" ... />
+
+  // After
+  <Flex component="span" ... />
+
+  ```
+
+- If you had tests asserting DOM attributes, note that style-only props (e.g. `direction`, `gap`, `p`) no longer appear as attributes.
+- Box now accepts responsive layout props (`p`, `width`, `position`, etc.).
+
 ## [0.5.1] - 2025-08-10
 
-### Fixed
+### Fixed in 0.5.1
 
 - **Spacing shorthands:** prevent double-scaling for `m*/p*` shorthands. Values now scale exactly once via `theme.spacing()`.
   - `mt: 20` → `margin-top: 160px` (with spacing(20) = 160)

@@ -6,6 +6,8 @@ export * from "./Input";
 
 export { Box } from "./Box/Box";
 export type { BoxProps } from "./Box/Box.types";
+export * from "./Flex";
+export * from "./Grid";
 
 // Hooks
 export * from "../hooks/useButtonBase";

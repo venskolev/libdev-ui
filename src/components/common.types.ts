@@ -18,10 +18,32 @@ export type Color = LDColorToken | (string & {});
 
 /**
  * Public Radius prop:
- * - нашите токени ("sm" | "md" | "lg" | "xl" | "2xl" | "pill" | "circle")
+ * - Токени ("sm" | "md" | "lg" | "xl" | "2xl" | "pill" | "circle")
  * - или custom CSS стойност ("12px", "50%")
  */
 export type Radius = LDRadiusToken | (string & {});
 
-/** Ако ти трябва и за пропове някъде */
+/** Пропове */
 export type Shadow = LDShadowToken | (string & {});
+
+/* ------------------------------------------------------------------
+ * ГЛОБАЛНИ РЕСПОНСИВ ТИПОВЕ (добавени, без да нарушават текущото API)
+ * ------------------------------------------------------------------ */
+
+/** Breakpoint ключове, които ще ползваме консистентно в цялата библиотека */
+export type BreakpointKey = "xs" | "sm" | "md" | "lg" | "xl";
+
+/** Единична стойност или обект по breakpoint (напр. { xs: "...", md: "..." }) */
+export type Responsive<T> = T | Partial<Record<BreakpointKey, T>>;
+
+/** CSS дължина – число (=> px) или произволен string (%, rem, var(...), и т.н.) */
+export type CSSLength = number | string;
+
+/** Пространства/размери, които могат да са число (=> px/spacing) или string */
+export type Space = CSSLength;
+
+/** Удобен alias, когато очакваме responsive spacing */
+export type ResponsiveSpace = Responsive<Space>;
+
+/** Понякога е удобно и responsive boolean */
+export type ResponsiveBoolean = Responsive<boolean>;
