@@ -12,6 +12,25 @@ export * from "./Container/Container";
 export type { ContainerProps, ContainerSize, ContainerAlign } from "./Container/Container.types";
 export * from "./BoxMotion";
 
+// Typography – включва и алиаса Text.
+export { Typography } from "./Typography";
+export { Text } from "./Typography/Text";
+
+export type {
+  TypographyProps,
+  TypographyComponent,
+  TextLevel,
+  TextVariant,
+  TextColor,
+  LevelMapping,
+  TextWeight,
+  TextAlign,
+  TextWrap,
+} from "./Typography/Typography.types";
+
+export type { TextProps } from "./Typography/Text";
+
+
 // Hooks
 export * from "../hooks/useButtonBase";
 export * from "../hooks/useInputBase";

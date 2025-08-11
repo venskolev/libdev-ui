@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## 0.9.0 - 2025-08-11
+
+### Added
+
+- **Typography** component (with **Text** alias).
+  - Polymorphic root via `as`/`component`.
+  - Levels: `h1` | `h2` | `h3` | `h4` | `title-lg` | `title-md` | `title-sm` | `body-lg` | `body-md` | `body-sm` | `body-xs` | `inherit`.
+  - Variants: `plain` | `soft` | `solid` | `outlined`.
+  - Themed colors via `LDColorToken` (e.g. `text.secondary`, `primary.hover`) or any CSS color / `var(...)`.
+  - Decorators: `startDecorator`, `endDecorator`.
+  - Wrapping: `wrap="wrap|nowrap|balance|pretty"`, `noWrap`, `truncate`.
+  - Typography controls: `align`, `weight`, `gutterBottom`, `levelMapping`.
+  - Slots API: `slots` and `slotProps` for `root`, `startDecorator`, `endDecorator`.
+  - **sl** style layer (merged before `style`) and full **CommonLayoutProps** support (m/p/size/position/overflow/flex/grid).
+
 ## 0.8.0 – 2025-08-11
 
 ### Added in 0.8.0
@@ -126,7 +141,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ## [0.5.0] - 2025-08-10
 
-### Added
+### Added in 0.5.0
 
 - **Runtime token injection:** tokens are injected from `global.css` at import time (generated injector), so consumers do not need to import any CSS.
 - **Semantic `boxShadow` support:** `xs | sm | md | lg | xl` mapped to CSS variables with sensible fallbacks.
