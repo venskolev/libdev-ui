@@ -10,6 +10,7 @@ export * from "./Flex";
 export * from "./Grid";
 export * from "./Container/Container";
 export type { ContainerProps, ContainerSize, ContainerAlign } from "./Container/Container.types";
+export * from "./BoxMotion";
 
 // Hooks
 export * from "../hooks/useButtonBase";

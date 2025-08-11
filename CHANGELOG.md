@@ -5,6 +5,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## 0.8.0 – 2025-08-11
+
+### Added in 0.8.0
+
+- **New `BoxMotion` component** (layout-friendly motion wrapper).
+  - **Entrance animations** (triggered on scroll into view):
+    `fadeIn`, `fadeInUp`, `fadeInDown`, `fadeInLeft`, `fadeInRight`,
+    `zoomIn`, `zoomOut`,
+    `bounceIn`, `bounceInUp`, `bounceInDown`, `bounceInLeft`, `bounceInRight`,
+    `slideInUp`, `slideInDown`, `slideInLeft`, `slideInRight`,
+    `rotateIn`,
+    `lightSpeedIn`,
+    `flipInX`, `flipInY`,
+    `rollIn`, `jackInTheBox`, `wobble`, `hinge`, `pulse`, `swing`, `tada`,
+    `rubberBand`, `bounce`, `flash`, `shake`, `jello`.
+  - **Scrolling effects** (live while scrolling): vertical/horizontal parallax, opacity, blur, rotate, scale.
+  - **Mouse interactions**: `mouseTrack` (subtle XY translation) and `tilt3d` (rotateX/rotateY with perspective).
+  - **API**:
+    - `effect`, `speed` (`slow` | `normal` | `fast`), `delay`, `staggerChildren`
+    - `viewportOnce`, `viewportAmount` (or pass a custom `viewport`)
+    - `disabled`, `variantsOverride`
+    - `scroll` `{ vertical, horizontal, opacity, blur, rotate, scale, mouseTrack, tilt3d }`
+    - `sl` (Style Layer) + full **CommonLayoutProps** via the layout engine.
+  - **Behavior**:
+    - Uses `whileInView` by default (`once: true`) for entrance.
+    - If a user provides `animate`, the component respects it and **does not** attach `whileInView/viewport` (no conflicts).
+    - MotionValues for scroll/mouse/tilt are attached **only when requested**, so entrance variants aren’t overridden unintentionally.
+  - **DOM hygiene**: style-only and motion-only props are filtered from the DOM; styles are applied through `$styles` and `applyCommonLayoutStyles`.
+
 ## [0.7.2] - 2025-08-10
 
 ### Fixed in 0.7.2
