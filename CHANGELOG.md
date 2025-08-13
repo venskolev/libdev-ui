@@ -5,9 +5,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.10.0] – 2025-08-13
+
+### Added in 0.10.0
+
+- **Popover** component family:
+  - `PopoverForm` – container that manages open state (controlled/uncontrolled), `placement`, `offset`, `disableOutsideClose`, and focus return on close.
+  - `PopoverTrigger` – supports `asChild` to avoid nested buttons; keyboard activation fallback when not using a `<button>`.
+  - `PopoverAnchor` – optional anchor. When omitted, the trigger acts as the reference.
+  - `PopoverCard` – rendered via portal to `document.body`; positioned with `position: fixed`; double `requestAnimationFrame` ensures stable first measurement; proper `transform-origin`.
+  - `PopoverClose` – convenience close control.
+  - `PopoverArrow` – crisp two-layer border triangle (shadow + fill), no trapezoid artifacts; follows the anchor and clamps inside the card.
+- **12 placements**: `top|right|bottom|left` plus `-start|-end` variants.
+- **Viewport clamping** with inner padding to keep the card inside the screen.
+- **Responsiveness**: arrow “drift” is limited; vertical `*-end` cases bias towards center; guards prevent the arrow from touching bottom edges while scrolling.
+- **Accessibility**: `role="dialog"`, `aria-modal`, `aria-expanded` on trigger; closes on `Esc` and outside click; focus returns to the trigger.
+- **Styling**: `sl` style prop supported on wrappers (`TriggerWrapper`, `AnchorWrapper`, `CardRoot`, `ArrowRoot`).
+- **TypeScript types**: `PopoverPlacement`, `PopoverProps`, `PopoverAnchorProps`, `PopoverTriggerProps`, `PopoverCardProps`, `PopoverCloseProps`, `PopoverArrowProps`, `PopoverContextValue`.
+
+### Fixed in 0.10.0
+
+- Initial position jumping on first open due to premature measurement.
+- Arrow visual artifacts (trapezoid look) — replaced with a clean border-triangle approach.
+- Undesired arrow “swimming” for vertical `*-end` placements — now clamped and biased naturally.
+- Avoid nested `<button>` structures by providing a trigger fallback wrapper.
+
+### Docs in 0.10.0
+
+- New **`Popover.mdx`** with full API docs and a **grid demo** (compass) showcasing all 12 placements.
+- Example snippets: **BasicPopover**, **PlacementTester**.
+
 ## 0.9.0 - 2025-08-11
 
-### Added
+### Added in 0.9.0
 
 - **Typography** component (with **Text** alias).
   - Polymorphic root via `as`/`component`.

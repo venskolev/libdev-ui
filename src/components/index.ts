@@ -30,6 +30,8 @@ export type {
 
 export type { TextProps } from "./Typography/Text";
 
+export * from "./Popover";
+
 
 // Hooks
 export * from "../hooks/useButtonBase";
