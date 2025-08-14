@@ -28,6 +28,11 @@ import {
 
 import { AnchorWrapper, CardRoot, TriggerWrapper, ArrowRoot } from "./Popover.styles";
 
+const canUseDOM = typeof window !== "undefined" && typeof document !== "undefined";
+
+// Изоморфен layout effect: на сървър → useEffect (no-op), в браузъра → useLayoutEffect
+const useIsoLayoutEffect = canUseDOM ? useLayoutEffect : useEffect;
+
 // Контролирано/неконтролирано състояние за управление на отворено/затворено
 /* -------------------------------------------------
  *  Controlled / uncontrolled helper
@@ -336,7 +341,7 @@ export function PopoverCard({
   const id = useId();
 
   // Позициониране и слушане за скрол събития
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     const el = ctx.cardEl;
     if (!el) return;
 
@@ -423,7 +428,8 @@ export function PopoverCard({
     </CardRoot>
   );
 
-  return createPortal(content, document.body);
+ if (!canUseDOM) return null;
+return createPortal(content, document.body);
 }
 
 // Компонент за затваряне на изскачащия прозорец

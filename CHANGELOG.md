@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.11.1] — Popover SSR hardening (2025-08-14)
+
+### Fixed in 0.11.1
+
+- Prevent access to `document/window` during SSR in `Popover`.
+- Introduced `useIsoLayoutEffect` (isomorphic: `useLayoutEffect` on client, `useEffect` on server) to silence SSR warnings.
+- `PopoverCard` now returns `null` on the server and only portals to `document.body` in the browser.
+- `PopoverArrow` migrated to `useIsoLayoutEffect`.
+- Docusaurus SSG no longer fails on `/docs/Components/utils/popover`.
+
+### Docs in 0.11.1
+
+- Note: For interactive demos, consider wrapping examples in `<BrowserOnly>` to avoid SSR pitfalls.
+
 ## [0.11.0] — Card & RatioBox (2025-08-13)
 
 ### Added in 0.11.0
