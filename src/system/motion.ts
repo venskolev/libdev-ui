@@ -1,5 +1,5 @@
+// src/system/motion.ts
 // LibDev UI – Motion system utilities
-// Коментари на български; видимите текстове на английски.
 
 import type { Variants, Transition } from "framer-motion";
 import { useInView, useAnimationControls } from "framer-motion";

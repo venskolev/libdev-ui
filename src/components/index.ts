@@ -1,4 +1,5 @@
 // src/index.ts
+// LibDev UI – Custom React UI components
 
 export * from "./Button";
 export * from "./AutoSuggest";
@@ -11,6 +12,10 @@ export * from "./Grid";
 export * from "./Container/Container";
 export type { ContainerProps, ContainerSize, ContainerAlign } from "./Container/Container.types";
 export * from "./BoxMotion";
+
+export { Card, CardContent, CardActions, CardCover, CardOverflow } from "./Card";
+export * from "./RatioBox"
+
 
 // Typography – включва и алиаса Text.
 export { Typography } from "./Typography";

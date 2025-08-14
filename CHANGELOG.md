@@ -5,6 +5,46 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.11.0] — Card & RatioBox (2025-08-13)
+
+### Added in 0.11.0
+
+- **Card package** (inspired by MUI Joy) with named subcomponents:
+  - `Card` (root), `CardContent`, `CardActions`, `CardCover`, `CardOverflow`.
+- **Props & behavior**
+  - `color`: accepts `"neutral"` plus global colors (`"primary" | "secondary" | "success" | "danger" | "warning" | "info"`) and arbitrary strings (`"#7c3aed"`, `"tomato"`, `var(...)`).
+  - `variant`: `"outlined" | "plain" | "soft" | "solid"` (in addition to global `Variant`).
+  - `size`: `"sm" | "md" | "lg"`.
+  - `orientation`: `"vertical" | "horizontal"`; `CardActions` also supports `"horizontal-reverse"`.
+  - `invertedColors`: inverts implicit text color to match `variant`/`color`.
+  - `buttonFlex`: flex value distributed to `CardActions` direct children.
+  - `component`: polymorphic root (e.g., `section`).
+  - `slots` / `slotProps` with `slotProps.root.sl` support.
+  - `sl`: style slot powered by the LibDev style engine (tokens, responsive, shorthands).
+  - **CommonLayoutProps** on all components (margin/padding/size/position/overflow/flex/grid interop).
+- **RatioBox helper** (AspectRatio-like):
+  - **Props:** `ratio` (`number | "16/9" | "4/3" | "1" | "3/4" | "3:4"`), `objectFit` (default `"cover"`), `sl`, `component`, `slots`/`slotProps`.
+  - **Slots:** `root`, `content`; intrinsic ratio via padding technique.
+
+### Changed in 0.11.0
+
+- **Color token typing** in `Card.utils.ts`:
+  - Generate strict `LDColorToken` via `makeToken(base, part)` before calling `cssVarForColor`.
+  - Use `var(--ld-color-white)` for solid-on-text instead of a non-token string.
+- **`sl` merging** in `Card.tsx`:
+  - New `normalizeSl(...)` flattens style arrays to a valid `SlProp` and prevents nested arrays / TS union issues.
+- **Styles integration** in `Card.styles.ts`:
+  - Emotion styles now compose variant/color/size/orientation recipes + layout mixin + `sl` (with prop filtering to avoid DOM leaks).
+- **API recommendation:**
+  - Prefer named components (`Card`, `CardContent`, …). Dot API (`Card.Content`) remains optional and can be disabled if desired.
+
+### Fixed in 011.0
+
+- **TypeScript errors**
+  - “`string` is not assignable to `LDColorToken`” → resolved by strict token helpers.
+  - Missing `size` on subcomponents → added to `CardContentProps`, `CardActionsProps`, `CardOverflowProps`.
+  - `SlProp` union issues (`StyleArg[]`not assignable`) → fixed via`normalizeSl`.
+
 ## [0.10.0] – 2025-08-13
 
 ### Added in 0.10.0
@@ -35,7 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - New **`Popover.mdx`** with full API docs and a **grid demo** (compass) showcasing all 12 placements.
 - Example snippets: **BasicPopover**, **PlacementTester**.
 
-## 0.9.0 - 2025-08-11
+## [0.9.0] - 2025-08-11
 
 ### Added in 0.9.0
 
@@ -50,7 +90,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
   - Slots API: `slots` and `slotProps` for `root`, `startDecorator`, `endDecorator`.
   - **sl** style layer (merged before `style`) and full **CommonLayoutProps** support (m/p/size/position/overflow/flex/grid).
 
-## 0.8.0 – 2025-08-11
+## [0.8.0] – 2025-08-11
 
 ### Added in 0.8.0
 
