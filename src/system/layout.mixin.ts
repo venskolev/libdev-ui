@@ -1,3 +1,6 @@
+// src/system/layout.mixin.ts
+// LibDev UI – Layout system mixin
+
 import { css } from "@emotion/react";
 import type { CommonLayoutProps } from "./layout.types";
 import {

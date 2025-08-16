@@ -5,6 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.12.0] - 2025-08-16
+
+### Added in 0.12.0
+
+- Introduced new **`Checkbox` component** to the library.
+- Supports controlled and uncontrolled usage.
+- Variants: `plain`, `soft`, `outlined`, `solid`.
+- Colors: `primary`, `success`, `warning`, `danger`, `secondary`, `info`, `neutral`.
+- Sizes: `sm`, `md`, `lg`.
+- Features:
+  - `checkedIcon`, `indeterminateIcon`, `disableIcon`.
+  - `indeterminate` visual state with ARIA support.
+  - `overlay` mode (action fills container).
+  - `slots` and `slotProps` for advanced customization.
+  - `disabled` and `readOnly` states with proper styling.
+- Includes accessibility improvements (`aria-checked`, focus ring, keyboard navigation).
+
 ## [0.11.1] — Popover SSR hardening (2025-08-14)
 
 ### Fixed in 0.11.1

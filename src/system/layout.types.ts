@@ -1,3 +1,6 @@
+// src/system/layout.types.ts
+// LibDev UI – Layout system types
+
 import type {
   Responsive,
   ResponsiveSpace,

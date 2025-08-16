@@ -4,6 +4,7 @@
 export * from "./Button";
 export * from "./AutoSuggest";
 export * from "./Input";
+export * from "./Checkbox";
 
 export { Box } from "./Box/Box";
 export type { BoxProps } from "./Box/Box.types";
