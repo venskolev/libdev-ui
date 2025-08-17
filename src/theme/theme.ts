@@ -21,6 +21,18 @@ export const theme = {
     backgroundLevel2: "var(--ld-color-background-level2)",
 
     borderDefault: "var(--ld-color-border-default)",
+
+    success: "var(--ld-color-success)",
+    successHover: "var(--ld-color-success-hover)",
+
+    danger: "var(--ld-color-danger)",
+    dangerHover: "var(--ld-color-danger-hover)",
+
+    warning: "var(--ld-color-warning)",
+    warningHover: "var(--ld-color-warning-hover)",
+
+    info: "var(--ld-color-info)",
+    infoHover: "var(--ld-color-info-hover)",
   },
 
   radius: {
@@ -46,6 +58,7 @@ export const theme = {
     md: "1rem",
     lg: "1.5rem",
   },
+
 };
 
 export type LibDevTheme = typeof theme;

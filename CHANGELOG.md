@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.13.1] — 2025-08-17
+
+### Fixed in 0.13.1
+
+- **Radio**
+  - Fixed alignment of custom icons (`checkedIcon`, `uncheckedIcon`) → now properly centered inside the action area.
+  - Removed invalid `as` prop from `motion.span`, which was causing a **TypeScript error**.
+  - Preserved original styling for the **solid variant** (no changes compared to 0.13.0).
+
 ## [0.13.0] — 2025-08-17
 
 ### Added in 0.13.0

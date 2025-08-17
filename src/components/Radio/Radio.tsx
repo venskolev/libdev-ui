@@ -1,10 +1,8 @@
 'use client';
-// LibDev UI – Radio
-// Компонент с поддържан Slots API, контекст от RadioGroup и motion анимация.
 
 import * as React from "react";
 import { motion, AnimatePresence, type Transition } from "framer-motion";
-import { css as emCss } from "@emotion/react"; // композираме SerializedStyles
+import { css as emCss } from "@emotion/react";
 import { compileStyle } from "../../system/resolveStyle";
 import type { RadioProps, RadioOwnerState } from "./Radio.types";
 import {
@@ -21,15 +19,13 @@ import { resolveSlotProps, cx } from "./Radio.utils";
 import { useToggleBase } from "../../hooks/useToggleBase";
 import { useRadioGroupContext } from "./RadioGroup/RadioGroup.utils";
 
-/* ---------------------------------------------
- *  Компонент
- * ------------------------------------------- */
-export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(props, ref) {
-  // Дръпваме контекст от RadioGroup (ако има)
+export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
+  props,
+  ref
+) {
   const group = useRadioGroupContext();
 
   const {
-    // поведение
     checked: checkedProp,
     defaultChecked,
     value,
@@ -40,26 +36,21 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
     autoFocus,
     clearOnEscape,
 
-    // визуални
     size = group?.size ?? "md",
     color = group?.color ?? "primary",
     variant = group?.variant ?? "outlined",
     overlay = group?.overlay ?? false,
     disableIcon = group?.disableIcon ?? false,
 
-    // икони
     checkedIcon,
     uncheckedIcon,
 
-    // label node
     label,
 
-    // дом/клас
     className,
     component,
     sl,
 
-    // aria/events
     id,
     inputRef,
     onChange,
@@ -69,23 +60,17 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
     onKeyUp,
     onClear,
 
-    // slots
     slots,
     slotProps,
   } = props;
 
-  // Краен name идва от групата (ако е налична)
   const name = group?.name ?? nameProp;
-
-  // Ако сме в група → управляваме checked през груповата стойност
   const isInGroup = !!group;
   const isGroupChecked = isInGroup ? group!.value === value : undefined;
 
-  // Генерираме стабилно id за връзка с <label>
   const autoId = React.useId();
   const inputId = id ?? autoId;
 
-  // Хук за toggle-поведение; за Radio override-ваме type по-долу в getInputProps
   const {
     checked,
     focused,
@@ -108,12 +93,8 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
     value,
     inputRef,
     onChange: (ev, next) => {
-      // При радио – ако сме в група, селектираме стойността в групата
-      if (group) {
-        group.onChange?.(ev, value);
-      } else {
-        onChange?.(ev, next);
-      }
+      if (group) group.onChange?.(ev, value);
+      else onChange?.(ev, next);
     },
     onFocus,
     onBlur,
@@ -122,7 +103,6 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
     onClear,
   });
 
-  // Owner state – достъпен за slots
   const ownerState: RadioOwnerState = {
     checked,
     disabled: !!isDisabled,
@@ -138,15 +118,13 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
     className,
   };
 
-  // Slots или дефолтните
-  const RootSlot = slots?.root ?? (component ?? "span");
+  const RootSlot = slots?.root ?? component ?? "span";
   const ActionSlot = slots?.action ?? "span";
   const RadioSlot = slots?.radio ?? "span";
   const IconSlot = slots?.icon ?? "span";
   const InputSlot = slots?.input ?? "input";
   const LabelSlot = slots?.label ?? "label";
 
-  // Slot props (обект или функция)
   const rootSlotProps = resolveSlotProps(slotProps?.root, ownerState) ?? {};
   const actionSlotProps = resolveSlotProps(slotProps?.action, ownerState) ?? {};
   const radioSlotProps = resolveSlotProps(slotProps?.radio, ownerState) ?? {};
@@ -154,23 +132,17 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
   const inputSlotProps = resolveSlotProps(slotProps?.input, ownerState) ?? {};
   const labelSlotProps = resolveSlotProps(slotProps?.label, ownerState) ?? {};
 
-  // Стилове от системния `sl` проп
   const style = compileStyle(sl);
 
-  // Framer Motion – типизиран transition (TS-safe)
   const dotTransition: Transition = { type: "spring", stiffness: 420, damping: 28 };
-
-  // Ако няма custom checkedIcon и иконите не са изключени → дефолтна точка
   const useDefaultDot = !disableIcon && !checkedIcon;
 
-  // Композираме Emotion стиловете в един SerializedStyles (фиксира TS2322)
   const composedCss = emCss([sizeCss(String(size)), variantCss(String(variant))]);
 
-  // -------------------------------------------------
-  // Клик/клавиатура върху Action → клика към <input>
-  // -------------------------------------------------
   const clickInput = () => {
-    const el = innerRef.current ?? (document.getElementById(inputId) as HTMLInputElement | null);
+    const el =
+      innerRef.current ??
+      (document.getElementById(inputId) as HTMLInputElement | null);
     el?.focus();
     el?.click();
   };
@@ -194,13 +166,17 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
       {...rootSlotProps}
       {...getRootProps()}
       data-checked={checked ? "" : undefined}
+      data-variant={String(variant)}
+      data-color={String(color)}
       className={cx("ld-Radio-root", className, rootSlotProps.className)}
       css={composedCss}
-      style={style}
+      style={{
+        ...style,
+        ["--ld-radio-color" as any]: `var(--ld-color-${String(color)})`,
+      }}
       $overlay={overlay}
       aria-disabled={isDisabled || undefined}
     >
-      {/* Action зона – поема hover/focus, помещава visual radio, icon и input */}
       <Action
         as={ActionSlot as any}
         {...actionSlotProps}
@@ -215,7 +191,7 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
         }}
         role="radio"
         aria-checked={checked}
-        tabIndex={-1} // Коментар: табващ се е нативният input; Action приема мишка/space/enter
+        tabIndex={-1}
       >
         <RadioVisual
           as={RadioSlot as any}
@@ -223,7 +199,6 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
           className={cx("ld-Radio-radio", radioSlotProps.className)}
         />
 
-        {/* Абсолютен wrapper вътре в Action, който центрира точката 1:1 */}
         {!disableIcon && (
           <AnimatePresence initial={false} mode="wait">
             {checked ? (
@@ -233,7 +208,6 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={dotTransition}
-                // центрираме независимо от линия/височина на шрифт
                 style={{
                   position: "absolute",
                   inset: 0,
@@ -247,13 +221,20 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
                   as={IconSlot as any}
                   {...iconSlotProps}
                   className={cx("ld-Radio-icon", iconSlotProps.className)}
-                  /* Дефолтна точка: ако няма custom checkedIcon → пълним с currentColor */
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     ...(iconSlotProps as any)?.style,
-                    ...(useDefaultDot ? { background: "currentColor" } : null),
+                    ...(useDefaultDot
+                      ? {
+                          borderRadius: "50%",
+                          // контрастна точка при solid
+                          background: variant === "solid" ? "#fff" : "currentColor",
+                        }
+                      : null),
                   }}
                 >
-                  {/* Ако има custom икона за checked – показваме я; иначе оставяме точката */}
                   {checkedIcon}
                 </Icon>
               </motion.span>
@@ -277,15 +258,20 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
                   as={IconSlot as any}
                   {...iconSlotProps}
                   className={cx("ld-Radio-icon", iconSlotProps.className)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    ...(iconSlotProps as any)?.style,
+                  }}
                 >
-                  {uncheckedIcon /* по подразбиране празно – без точка */}
+                  {uncheckedIcon}
                 </Icon>
               </motion.span>
             )}
           </AnimatePresence>
         )}
 
-        {/* Скрити нативен input; override-ваме type към "radio" */}
         <HiddenInput
           as={InputSlot as any}
           {...getInputProps({ type: "radio", id: inputId })}
@@ -295,17 +281,12 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(pr
         />
       </Action>
 
-      {/* Label, ако е подаден */}
       {label && (
         <Label
           as={LabelSlot as any}
           {...labelSlotProps}
           className={cx("ld-Radio-label", labelSlotProps.className)}
           htmlFor={inputId}
-          onClick={(e: any) => {
-            // Коментар: позволяваме click върху label да активира input-а
-            labelSlotProps.onClick?.(e);
-          }}
         >
           {label}
         </Label>

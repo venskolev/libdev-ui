@@ -1,118 +1,150 @@
-import styled from "@emotion/styled";
+// src/components/Radio/Radio.styles.ts
 import { css } from "@emotion/react";
+import styled from "@emotion/styled";
 
-/* ---------------------------------------------
- *  Стилизация на слотовете – без хардкоднати цветове.
- *  Използваме CSS променливи и data-атрибути.
- * ------------------------------------------- */
+/* sizes */
+const SIZE = {
+  sm: { outer: 16, dot: 8, gap: 8 },
+  md: { outer: 20, dot: 10, gap: 10 },
+  lg: { outer: 24, dot: 12, gap: 12 },
+} as const;
 
+export const sizeCss = (size: string) => {
+  const s = (SIZE as any)[size] ?? SIZE.md;
+  return css`
+    --ld-radio-outer: ${s.outer}px;
+    --ld-radio-dot: ${s.dot}px;
+    --ld-radio-gap: ${s.gap}px;
+  `;
+};
+
+/* variants – използваме var(--ld-radio-color) само за Action; етикетът остава с наследен цвят */
+export const variantCss = (variant: string) => {
+  const neutral = "var(--ld-color-border-default, rgba(0,0,0,.25))";
+
+  switch (variant) {
+    case "plain":
+      return css`
+        .ld-Radio-action {
+          color: var(--ld-radio-color, currentColor);
+        }
+        .ld-Radio-radio {
+          width: var(--ld-radio-outer);
+          height: var(--ld-radio-outer);
+          border-radius: 50%;
+          border: 2px solid ${neutral};
+          background: transparent;
+        }
+        &[data-checked] .ld-Radio-radio {
+          border-color: currentColor;
+        }
+      `;
+    case "soft":
+      return css`
+        .ld-Radio-action {
+          color: var(--ld-radio-color, currentColor);
+        }
+        .ld-Radio-radio {
+          width: var(--ld-radio-outer);
+          height: var(--ld-radio-outer);
+          border-radius: 50%;
+          border: 2px solid ${neutral};
+          background: color-mix(in srgb, currentColor 16%, transparent);
+        }
+        &[data-checked] .ld-Radio-radio {
+          background: color-mix(in srgb, currentColor 28%, transparent);
+          border-color: color-mix(in srgb, currentColor 60%, ${neutral});
+        }
+      `;
+    case "solid":
+      return css`
+        .ld-Radio-action {
+          color: var(--ld-radio-color, currentColor);
+        }
+        .ld-Radio-radio {
+          width: var(--ld-radio-outer);
+          height: var(--ld-radio-outer);
+          border-radius: 50%;
+          border: 2px solid currentColor;
+          /* background: var(--ld-color-white) */
+          background: currentColor;
+        }
+      `;
+    case "outlined":
+    default:
+      return css`
+        .ld-Radio-action {
+          color: var(--ld-radio-color, currentColor);
+        }
+        .ld-Radio-radio {
+          width: var(--ld-radio-outer);
+          height: var(--ld-radio-outer);
+          border-radius: 50%;
+          border: 2px solid ${neutral};
+          background: transparent;
+        }
+        &[data-checked] .ld-Radio-radio {
+          border-color: currentColor;
+        }
+      `;
+  }
+};
+
+/* base geometry */
 export const Root = styled.span<{ $overlay?: boolean }>`
-  /* Базов контейнер */
-  position: ${({ $overlay }) => ($overlay ? "initial" : "relative")};
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  vertical-align: middle;
+  gap: var(--ld-radio-gap);
+  line-height: 1;
 
-  /* Data флагове от логиката */
   &[data-disabled] {
-    cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.55;
+    pointer-events: none;
   }
 `;
 
 export const Action = styled.span`
-  /* Клик зона – поема hover/focus ефекти */
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
-
-  /* Размери през CSS променливи – идват от варианта/size */
-  width: var(--ld-radio-size, 20px);
-  height: var(--ld-radio-size, 20px);
-  border-radius: 999px;
-
-  /* Фокус ринг */
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px var(--ld-color-primary-contrast, rgba(59,130,246,.35));
-  }
+  min-width: var(--ld-radio-outer);
+  min-height: var(--ld-radio-outer);
+  cursor: pointer;
+  outline: 0;
 `;
 
 export const RadioVisual = styled.span`
-  /* Визуален пръстен (бордър) */
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  border: 2px solid var(--ld-radio-border, currentColor);
-  background: var(--ld-radio-bg, transparent);
-`;
-
-/* Абсолютен wrapper, който държи точката/иконата винаги центрирана */
-export const IconWrap = styled.span`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
+  position: relative;
+  display: inline-block;
+  width: var(--ld-radio-outer);
+  height: var(--ld-radio-outer);
+  border-radius: 50%;
 `;
 
 export const Icon = styled.span`
-  /* Вътрешната точка (checked) или custom икона */
-  position: relative;
-  display: inline-flex;            /* важен fix за custom икони */
-  align-items: center;             /* центриране по Y */
-  justify-content: center;         /* центриране по X */
-  width: calc(var(--ld-radio-size, 20px) * 0.5);
-  height: calc(var(--ld-radio-size, 20px) * 0.5);
-  border-radius: 999px;
-  line-height: 0;                  /* да няма baseline от текста */
-  vertical-align: middle;          /* безопасност за inline контекст */
-
-  /* Когато потребителят подаде SVG/спан, да не „потъва“ по baseline */
-  & > svg, & > span, & > i {
-    display: block;
-    line-height: 0;
-  }
+  position: absolute;
+  width: var(--ld-radio-dot);
+  height: var(--ld-radio-dot);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  /* background идва от inline style (default точка = currentColor) */
 `;
 
 export const HiddenInput = styled.input`
-  /* Скриваме нативния radio, но запазваме достъпността */
   position: absolute;
   opacity: 0;
   pointer-events: none;
   width: 1px;
   height: 1px;
+  left: -9999px;
 `;
 
 export const Label = styled.label`
-  /* Текстов label */
-  cursor: inherit;
   user-select: none;
-  line-height: 1.2;
-`;
-
-/* ---------------------------------------------
- *  Варианти/размери през CSS custom props
- * ------------------------------------------- */
-export const sizeCss = (size: string | undefined) => css`
-  --ld-radio-size: ${size === "sm" ? "18px" : size === "lg" ? "22px" : "20px"};
-`;
-
-export const variantCss = (variant?: string) => css`
-  /* Placeholder – визуалните цветове да се закачат към вашите CSS vars */
-  --ld-radio-border: var(--ld-color-border, currentColor);
-  --ld-radio-bg: transparent;
-
-  &[data-checked] {
-    --ld-radio-border: var(--ld-color-primary, currentColor);
-    --ld-radio-bg: var(--ld-color-primary-solidBg, transparent);
-  }
-
-  &[data-disabled] {
-    --ld-radio-border: var(--ld-color-border-muted, currentColor);
-  }
+  cursor: pointer;
 `;
