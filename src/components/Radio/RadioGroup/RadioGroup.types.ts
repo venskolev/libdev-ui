@@ -1,3 +1,6 @@
+// src/components/Radio/RadioGroup/RadioGroup.types.ts
+// LibDev UI – RadioGroup types
+
 import * as React from "react";
 import type { Size, Color, Variant } from "../../common.types";
 

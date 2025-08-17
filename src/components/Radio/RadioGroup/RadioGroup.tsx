@@ -39,7 +39,7 @@ export const RadioGroup = React.forwardRef<HTMLElement, RadioGroupProps>(functio
 
     size = "md",
     color = "primary",
-    variant = "plain",
+    variant = "outlined",
 
     disabled = false,
     readOnly = false,

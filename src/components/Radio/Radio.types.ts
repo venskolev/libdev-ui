@@ -1,3 +1,6 @@
+// src/components/Radio/Radio.types.ts
+// LibDev UI – Radio types
+
 import * as React from "react";
 import type { Size, Color, Variant } from "../common.types";
 

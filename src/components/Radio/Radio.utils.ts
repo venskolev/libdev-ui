@@ -1,3 +1,6 @@
+// src/components/Radio/Radio.utils.ts
+// LibDev UI – Radio utilities
+
 import * as React from "react";
 import type { SlotProp } from "./Radio.types";
 

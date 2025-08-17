@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.13.2] — 2025-08-17
+
+### Fixed in 0.13.2
+
+- **RadioGroup / Radio**
+  - Correct default variant to **`outlined`** when no `variant` is provided in `RadioGroup` or `Radio`.
+  - Ensure **`plain`** variant renders **no outer ring/border** while still showing the **inner dot** when checked.
+  - Keep custom icon centering and motion animation behavior intact.
+
 ## [0.13.1] — 2025-08-17
 
 ### Fixed in 0.13.1

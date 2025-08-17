@@ -1,4 +1,6 @@
 // src/components/Radio/Radio.styles.ts
+// LibDev UI – Radio styles (Emotion)
+
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
@@ -23,28 +25,29 @@ export const variantCss = (variant: string) => {
   const neutral = "var(--ld-color-border-default, rgba(0,0,0,.25))";
 
   switch (variant) {
+    /* PLAIN: няма ринг; точката идва от <Icon> при checked */
     case "plain":
       return css`
-        .ld-Radio-action {
-          color: var(--ld-radio-color, currentColor);
-        }
-        .ld-Radio-radio {
+        & .ld-Radio-action { color: var(--ld-radio-color, currentColor); }
+        & .ld-Radio-radio {
           width: var(--ld-radio-outer);
           height: var(--ld-radio-outer);
           border-radius: 50%;
-          border: 2px solid ${neutral};
+          border: 2px solid transparent; /* винаги прозрачно */
           background: transparent;
         }
-        &[data-checked] .ld-Radio-radio {
-          border-color: currentColor;
+        /* НЯМА промяна на border при checked за plain! */
+        /* по желание: фокус индикация */
+        &[data-focused] .ld-Radio-radio {
+          box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 25%, transparent);
         }
-      `;
+        `;
+        
+        /* SOFT */
     case "soft":
       return css`
-        .ld-Radio-action {
-          color: var(--ld-radio-color, currentColor);
-        }
-        .ld-Radio-radio {
+        & .ld-Radio-action { color: var(--ld-radio-color, currentColor); }
+        & .ld-Radio-radio {
           width: var(--ld-radio-outer);
           height: var(--ld-radio-outer);
           border-radius: 50%;
@@ -56,35 +59,33 @@ export const variantCss = (variant: string) => {
           border-color: color-mix(in srgb, currentColor 60%, ${neutral});
         }
       `;
+
+    /* SOLID */
     case "solid":
       return css`
-        .ld-Radio-action {
-          color: var(--ld-radio-color, currentColor);
-        }
-        .ld-Radio-radio {
+        & .ld-Radio-action { color: var(--ld-radio-color, currentColor); }
+        & .ld-Radio-radio {
           width: var(--ld-radio-outer);
           height: var(--ld-radio-outer);
           border-radius: 50%;
           border: 2px solid currentColor;
-          /* background: var(--ld-color-white) */
           background: currentColor;
         }
       `;
+ /* OUTLINED (default) */
     case "outlined":
     default:
       return css`
-        .ld-Radio-action {
-          color: var(--ld-radio-color, currentColor);
-        }
-        .ld-Radio-radio {
+        & .ld-Radio-action { color: var(--ld-radio-color, currentColor); }
+        & .ld-Radio-radio {
           width: var(--ld-radio-outer);
           height: var(--ld-radio-outer);
           border-radius: 50%;
-          border: 2px solid ${neutral};
+          border: 2px solid ${neutral}; /* винаги има ринг */
           background: transparent;
         }
         &[data-checked] .ld-Radio-radio {
-          border-color: currentColor;
+          border-color: currentColor;     /* цветен ринг при checked */
         }
       `;
   }

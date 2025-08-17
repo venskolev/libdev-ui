@@ -1,3 +1,6 @@
+// src/components/Radio/Radio.tsx
+// LibDev UI – Radio component (slots API) using useToggleBase
+
 'use client';
 
 import * as React from "react";
@@ -199,78 +202,77 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
           className={cx("ld-Radio-radio", radioSlotProps.className)}
         />
 
-        {!disableIcon && (
-          <AnimatePresence initial={false} mode="wait">
-            {checked ? (
-              <motion.span
-                key="on"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={dotTransition}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  pointerEvents: "none",
-                }}
-              >
-                <Icon
-                  as={IconSlot as any}
-                  {...iconSlotProps}
-                  className={cx("ld-Radio-icon", iconSlotProps.className)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ...(iconSlotProps as any)?.style,
-                    ...(useDefaultDot
-                      ? {
-                          borderRadius: "50%",
-                          // контрастна точка при solid
-                          background: variant === "solid" ? "#fff" : "currentColor",
-                        }
-                      : null),
-                  }}
-                >
-                  {checkedIcon}
-                </Icon>
-              </motion.span>
-            ) : (
-              <motion.span
-                key="off"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={dotTransition}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  pointerEvents: "none",
-                }}
-              >
-                <Icon
-                  as={IconSlot as any}
-                  {...iconSlotProps}
-                  className={cx("ld-Radio-icon", iconSlotProps.className)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ...(iconSlotProps as any)?.style,
-                  }}
-                >
-                  {uncheckedIcon}
-                </Icon>
-              </motion.span>
-            )}
-          </AnimatePresence>
-        )}
+      {!disableIcon && (
+  <AnimatePresence initial={false} mode="wait">
+    {checked ? (
+      <motion.span
+        key="on"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={dotTransition}
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Icon
+          as={IconSlot as any}
+          {...iconSlotProps}
+          className={cx("ld-Radio-icon", iconSlotProps.className)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            ...(iconSlotProps as any)?.style,
+            ...(useDefaultDot
+              ? {
+                  borderRadius: "50%",
+                  background: variant === "solid" ? "#fff" : "currentColor",
+                }
+              : null),
+          }}
+        >
+          {checkedIcon}
+        </Icon>
+      </motion.span>
+    ) : (
+      <motion.span
+        key="off"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={dotTransition}
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Icon
+          as={IconSlot as any}
+          {...iconSlotProps}
+          className={cx("ld-Radio-icon", iconSlotProps.className)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            ...(iconSlotProps as any)?.style,
+          }}
+        >
+          {uncheckedIcon}
+        </Icon>
+      </motion.span>
+    )}
+  </AnimatePresence>
+)}
 
         <HiddenInput
           as={InputSlot as any}

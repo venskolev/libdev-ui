@@ -1,3 +1,6 @@
+// src/components/Radio/RadioGroup/RadioGroup.utils.ts
+// LibDev UI – RadioGroup utilities
+
 import * as React from "react";
 import type { RadioGroupProps } from "./RadioGroup.types";
 
