@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.13.3] - 2025-08-17
+
+### Fixed in 0.13.3
+
+- **Spacing system**: Removed implicit ×8 scaling for numeric values.
+  - Before: `gap={2}` → `16px`
+  - Now: `gap={2}` → `2px`
+- Updated `defaultTheme.spacing` to return raw numbers and normalized `scaleIfSpacing`
+  to always append `px` units.
+- This makes all spacing props (`gap`, `margin`, `padding`, etc.) behave as expected
+  with direct pixel values.
+
 ## [0.13.2] — 2025-08-17
 
 ### Fixed in 0.13.2

@@ -24,7 +24,8 @@ export const defaultTheme: LibDevTheme = {
       return `@media (min-width:${bp}px)`;
     },
   },
-  spacing: (n: number) => n * 8,
+  // коментар: числата вече се третират като пиксели 1:1 (2 -> 2px)
+  spacing: (n: number) => n,
 };
 
 /**
@@ -279,7 +280,7 @@ const SPACING_PROPS = new Set<keyof CSSProperties>([
 
 const scaleIfSpacing = (prop: string, val: any, theme: LibDevTheme) => {
   if (!SPACING_PROPS.has(prop as keyof CSSProperties)) return val;
-  if (typeof val === "number") return theme.spacing(val);
+  if (typeof val === "number") return `${theme.spacing(val)}px`; // ← добавяме px тук
   return val;
 };
 
