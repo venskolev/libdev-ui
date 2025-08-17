@@ -5,6 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.13.0] — 2025-08-17
+
+### Added in 0.13.0
+
+- **Radio** and **RadioGroup** components
+  - Controlled & uncontrolled modes (`checked`/`defaultChecked`, `value`/`defaultValue`)
+  - Full **Slots API** (`root`, `action`, `radio`, `icon`, `input`, `label`) with `slots` and `slotProps`
+  - **Motion** animations (Framer Motion) for dot appearance/disappearance with spring transitions
+  - **Default dot** (uses `currentColor`) when no `checkedIcon` is provided
+  - **Custom icons** support for `checkedIcon` / `uncheckedIcon`
+  - **Overlay** mode for composition with list items (action area fills the positioned parent)
+  - **Theming** via design tokens and `sl` system prop (no hardcoded colors)
+  - **Sizes:** `sm | md | lg`
+  - **Variants:** `outlined | plain | soft | solid`
+  - **Colors:** `primary | secondary | success | danger | warning | info` (+ custom string)
+  - **ARIA & A11y:** native `<input type="radio" />`, `role="radiogroup"`, focus-visible ring, keyboard support (Arrow keys / Space / Enter)
+
 ## [0.12.0] - 2025-08-16
 
 ### Added in 0.12.0
