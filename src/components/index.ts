@@ -7,6 +7,7 @@ export * from "./Input";
 export * from "./Checkbox";
 export * from "./Radio";
 export * from "./Radio/RadioGroup";
+export * from "./Switch";
 
 export { Box } from "./Box/Box";
 export type { BoxProps } from "./Box/Box.types";

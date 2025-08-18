@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.14.0] - 2025-08-18
+
+### Added in 0.14.0
+
+- New `Switch` component:
+  - Motion-driven thumb for smooth on/off transitions.
+  - In-track animated border with modes: `gradient`, `glow`, `pulse` (stays within the eye; no overflow).
+  - Visual variants: `filled`, `outlined`, `ghost`.
+  - Sizes: `sm`, `md`, `lg`.
+  - Colors: `primary`, `success`, `danger`, `warning`, `info`, plus custom tokens via the style system.
+  - Decorators: `startDecorator`, `endDecorator` (string, node, or function of state).
+  - Controlled and uncontrolled usage with `checked` / `defaultChecked` and `onChange`.
+  - Slots and `slotProps` for `root`, `track`, `thumb`, `action`, `input`, `startDecorator`, `endDecorator`.
+  - System style overrides via `sl` and layout props interop.
+  - Accessibility: `role="switch"`, `aria-checked`, keyboard interaction with Space.
+
 ## [0.13.3] - 2025-08-17
 
 ### Fixed in 0.13.3
