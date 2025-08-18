@@ -33,7 +33,10 @@ import { useToggleBase } from "../../hooks/useToggleBase";
 const cap = (s?: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
 // За да анимираме styled Thumb чрез Framer Motion
-const MotionThumb = motion(ThumbBase);
+const MotionThumb = motion.create(ThumbBase);
+
+// Уникален ID за Switch компонента (за ARIA и форми)
+let __ldSwitchUid = 0;
 
 /* ---------------------------------------------
  *  Основен компонент
@@ -93,6 +96,26 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     ...other
   } = props;
 
+ // ✅ стабилен auto-id + уникален суфикс за целия документ
+const rawId = React.useId();
+
+// не махаме уникалността на React — само заменяме недопустими символи със '-'
+const sanitized = React.useMemo(
+  () => rawId.replace(/[^a-zA-Z0-9_-]/g, "-"),
+  [rawId]
+);
+
+// еднократно взимаме уникален суфикс за тази инстанция (модулен брояч)
+const seqRef = React.useRef<number>();
+if (seqRef.current == null) {
+  __ldSwitchUid += 1;
+  seqRef.current = __ldSwitchUid;
+}
+
+// финален „смислен“ id; ако има подаден id — уважаваме него
+const inputId = props.id ?? `libdev-${sanitized}-${seqRef.current}`;
+const inputName = props.name ?? inputId;
+
   // логика за toggle (контролирано/неконтролирано, фокус и т.н.)
   const toggle = useToggleBase({
     checked,
@@ -102,8 +125,8 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
     required,
     autoFocus,
     clearOnEscape,
-    id,
-    name,
+    id: inputId,           
+    name: inputName,       
     value,
     inputRef,
     onChange,
@@ -129,12 +152,12 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
 
   // данни към root (data-атрибути)
   const dataAttrs = buildRootDataAttrs({
-  checked: ownerState.checked,
-  disabled: ownerState.disabled,
-  readOnly: ownerState.readOnly,
-  required: toggle.required,
-  focused: toggle.focused,
-});
+    checked: ownerState.checked,
+    disabled: ownerState.disabled,
+    readOnly: ownerState.readOnly,
+    required: toggle.required,
+    focused: toggle.focused,
+  });
 
   // слотове и пропсове към тях
   const SLOTS = { ...defaultSwitchSlots, ...(slots || {}) };
@@ -201,10 +224,11 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
 
       {/* Истински input за форми и ARIA */}
       <HiddenInput
-        as={SLOTS.input}
-        role="switch"
-        aria-checked={toggle.checked}
-        {...toggle.getInputProps((sp.input as any) || {})}
+        {...toggle.getInputProps({
+          role: "switch",
+          ...(sp.input as any),
+        })}
+        data-slot="input"
       />
 
       {/* End decorator (optional) */}
@@ -213,8 +237,6 @@ export const Switch = React.forwardRef<HTMLElement, SwitchProps>(function Switch
           {renderDecorator(endDecorator, ownerState)}
         </SLOTS.endDecorator>
       ) : null}
-
-      {/* Children не се използват типично при Switch, но ги поддържаме */}
       {children}
     </RootAs>
   );

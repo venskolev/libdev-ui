@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.14.1] - 2025-08-18
+
+### Fixed in 0.14.1
+
+- **Switch**: Auto-generate meaningful, document-unique `id`/`name` for the native input (e.g., `libdev-r0-1`), removing autofill and audit warnings about missing/duplicate identifiers.
+- **Switch**: Prevent non-HTML props from leaking to the native `<input>` (notably `as="input"`), via `shouldForwardProp` on `HiddenInput`.
+- **Switch**: Eliminate layout/baseline shifts caused by a physical track border; `filled` now uses `--ld-switch-track-border-w: 0px` (no layout impact), others keep explicit widths.
+- **Switch**: Stable inline alignment in mixed text contexts (`vertical-align: middle; line-height: 1` on root).
+
+### Notes in 0.14.12
+
+- No breaking changes. If you previously relied on absent `id`/`name`, the input now always exposes a deterministic value derived from `useId()`.
+
 ## [0.14.0] - 2025-08-18
 
 ### Added in 0.14.0

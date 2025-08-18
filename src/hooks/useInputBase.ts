@@ -1,3 +1,6 @@
+// src/hooks/useInputBase.ts
+// LibDev UI – Базов хук за input-подобни компоненти
+
 'use client';
 import * as React from 'react';
 

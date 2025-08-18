@@ -1,5 +1,5 @@
 // src/components/Switch/Switch.styles.ts
-// LibDev UI – Switch styles (Emotion) v2: по-изчистена визия + борд само в track
+// LibDev UI – Switch styles (Emotion) v2 — фиксове за ownerState и layout
 
 import styled from "@emotion/styled";
 import { css as emCss, keyframes } from "@emotion/react";
@@ -29,6 +29,7 @@ const STYLE_ONLY_PROPS = new Set<string>([
   "slots",
   "startDecorator",
   "endDecorator",
+  "ownerState", // важно: да не изтича като ownerstate="[object Object]"
 ]);
 
 /* -------------------------------------------------
@@ -53,7 +54,7 @@ const SIZE_MAP = {
   lg: { trackW: 52, trackH: 28, thumb: 22, pad: 2 },
 } as const;
 
-// коментар: CSS променливи според размера
+// CSS променливи според размера
 export const sizeCss = (ownerState: Pick<SwitchOwnerState, "size">) => {
   const s = ownerState.size ?? "md";
   const v = SIZE_MAP[s as keyof typeof SIZE_MAP] ?? SIZE_MAP.md;
@@ -68,7 +69,7 @@ export const sizeCss = (ownerState: Pick<SwitchOwnerState, "size">) => {
 };
 
 /* -------------------------------------------------
- *  Варианти – v2 (по-мек контраст)
+ *  Варианти – отделна променлива за ширина на борда
  * ------------------------------------------------- */
 export const variantCss = (
   ownerState: Pick<SwitchOwnerState, "variant" | "color">
@@ -82,11 +83,12 @@ export const variantCss = (
       --ld-switch-track-bg: transparent;
       --ld-switch-track-bg-checked: ${c};
       --ld-switch-track-border: color-mix(in oklab, ${c} 26%, transparent);
+      --ld-switch-track-border-w: 1px; /* реален борд */
       --ld-switch-thumb-bg: var(--ld-color-white, #fff);
       --ld-switch-thumb-fg: ${c};
       --ld-switch-track-shadow-focus: 0 0 0 3px color-mix(in oklab, ${c} 18%, transparent);
       --ld-switch-track-shadow-checked: none;
-      --ld-switch-border-mode: gradient; /* outlined носи gradient по подразбиране */
+      --ld-switch-border-mode: gradient;
     `;
   }
   if (variant === "ghost") {
@@ -94,11 +96,12 @@ export const variantCss = (
       --ld-switch-track-bg: color-mix(in oklab, ${c} 10%, transparent);
       --ld-switch-track-bg-checked: ${c};
       --ld-switch-track-border: color-mix(in oklab, ${c} 26%, transparent);
+      --ld-switch-track-border-w: 1px; /* лек борд */
       --ld-switch-thumb-bg: var(--ld-color-white, #fff);
       --ld-switch-thumb-fg: ${cHover};
       --ld-switch-track-shadow-focus: 0 0 0 3px color-mix(in oklab, ${c} 18%, transparent);
       --ld-switch-track-shadow-checked: none;
-      --ld-switch-border-mode: focus-only; /* ghost показва борд само при фокус */
+      --ld-switch-border-mode: focus-only;
     `;
   }
   // filled
@@ -106,16 +109,17 @@ export const variantCss = (
     --ld-switch-track-bg: color-mix(in oklab, ${c} 60%, ${colorVar("background.level2")});
     --ld-switch-track-bg-checked: ${c};
     --ld-switch-track-border: transparent;
+    --ld-switch-track-border-w: 0px; /* критично: без layout ефект */
     --ld-switch-thumb-bg: var(--ld-color-white, #fff);
     --ld-switch-thumb-fg: ${cHover};
     --ld-switch-track-shadow-focus: 0 0 0 3px color-mix(in oklab, ${c} 18%, transparent);
     --ld-switch-track-shadow-checked: none;
-    --ld-switch-border-mode: glow; /* filled → меко сияние вместо градиент */
+    --ld-switch-border-mode: glow;
   `;
 };
 
 /* -------------------------------------------------
- *  Анимации на борда – вътре в TRACK (не около root)
+ *  Анимации на борда – вътре в TRACK
  * ------------------------------------------------- */
 const spin = keyframes`
   0% { background-position: 0% 50%; }
@@ -138,7 +142,6 @@ const trackAnimatedBorderCss = (owner: Pick<
   const speedMs = 2600; // по-бавно за „луксозно“ усещане
   const c = colorVar(owner.color ?? "primary");
 
-  // базов градиент (може да бъде override-нат чрез inline style променливи)
   const gradient = `
     linear-gradient(90deg,
       ${c},
@@ -148,7 +151,6 @@ const trackAnimatedBorderCss = (owner: Pick<
     )
   `;
 
-  // общи правила: всичко живее ВЪТРЕ в track, не излиза
   const base = emCss`
     position: relative;
     overflow: hidden; /* гарантирано не излиза от окото */
@@ -161,50 +163,38 @@ const trackAnimatedBorderCss = (owner: Pick<
       background: var(--ld-switch-border-gradient, ${gradient});
       background-size: 300% 300%;
       pointer-events: none;
-      /* маска → вижда се само бордът отвътре, без да излиза */
       -webkit-mask:
         linear-gradient(#000 0 0) content-box,
         linear-gradient(#000 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
-
-      /* v2: по подразбиране скрит; показва се при focus/checked според режим */
-      opacity: 0;
+      opacity: 0; /* показва се според режимите по-долу */
     }
   `;
 
-  if (owner.disabled || owner.readOnly) {
-    // Без анимации при disabled/readOnly
-    return emCss`${base}`;
-  }
+  if (owner.disabled || owner.readOnly) return emCss`${base}`;
 
-  // режим „градиент в рамката“
   if (owner.borderAnimation === "gradient") {
     return emCss`
       ${base}
       &::before {
         animation: ${spin} var(--ld-switch-border-speed, ${speedMs}ms) linear infinite;
       }
-      /* outlined – винаги при checked + при фокус; ghost – само при фокус; filled – не (ползва glow) */
       [data-checked] &::before { opacity: ${owner.variant === "ghost" ? 0 : 0.55}; }
       [data-focused] &::before { opacity: 0.55; }
     `;
   }
 
-  // режим „сияние“ – използва Track box-shadow вместо ::before
   if (owner.borderAnimation === "glow") {
     return emCss`
       --ld-switch-border-base: ${c};
       transition: box-shadow 180ms ease;
-      /* по дефолт няма сияние */
-      /* при фокус/checked подсилваме */
       [data-focused] & { box-shadow: 0 0 0 4px color-mix(in oklab, ${c} 22%, transparent); }
       [data-checked] & { box-shadow: 0 0 0 6px color-mix(in oklab, ${c} 18%, transparent); }
       [data-checked][data-focused] & { box-shadow: 0 0 0 8px color-mix(in oklab, ${c} 20%, transparent); }
     `;
   }
 
-  // режим „pulse“ – пулс при checked/focus
   if (owner.borderAnimation === "pulse") {
     return emCss`
       --ld-switch-border-base: ${c};
@@ -257,6 +247,8 @@ export const Root = styled("label", {
     position: relative;
     display: inline-flex;
     align-items: center;
+    vertical-align: middle; /* стабилно подравняване в текст */
+    line-height: 1;
     gap: 8px;
     cursor: ${ownerState.disabled ? "not-allowed" : "pointer"};
     user-select: none;
@@ -281,7 +273,7 @@ export const Track = styled("span", {
     height: var(--ld-switch-track-h);
     border-radius: ${radius};
     background: var(--ld-switch-track-bg);
-    border: 1px solid var(--ld-switch-track-border);
+    border: var(--ld-switch-track-border-w, 0px) solid var(--ld-switch-track-border);
     box-shadow: none;
     transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     ${trackAnimatedBorderCss(ownerState)}
@@ -300,7 +292,7 @@ export const Track = styled("span", {
   `;
 });
 
-/** Thumb – палецът (по-лека сянка) */
+/** Thumb – палецът */
 export const Thumb = styled("span", {
   shouldForwardProp: (prop) => !STYLE_ONLY_PROPS.has(String(prop)),
 })<{ ownerState: SwitchOwnerState }>(({ ownerState }) => {
@@ -341,9 +333,14 @@ export const Action = styled("div", {
   `;
 });
 
-/** Истински input – визуално скрит */
 export const HiddenInput = styled("input", {
-  shouldForwardProp: () => true,
+  // НЕ допускаме да „изтичат“ не-HTML пропсове към DOM:
+  shouldForwardProp: (prop) =>
+    prop !== "as" &&           // ⬅️ блокираме polymorphic пропа да стига до <input>
+    prop !== "ownerState" &&   // ⬅️ вътрешен проп, не е за DOM
+    prop !== "sl" &&           // ⬅️ системен стил проп, не е за DOM
+    prop !== "slotProps" &&    // ⬅️ вътрешен
+    prop !== "slots"           // ⬅️ вътрешен
 })({
   position: "absolute",
   opacity: 0,
