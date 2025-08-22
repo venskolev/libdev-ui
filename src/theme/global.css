@@ -1,28 +1,35 @@
 :root {
-  /* ===================== CANONICAL LD TOKENS ===================== */
+  /* ===================== CANONICAL LD TOKENS (LIGHT DEFAULT) ===================== */
 
-  /* Colors (semantic) */
-  --ld-color-primary: #3b82f6;
-  --ld-color-primary-hover: #2563eb;
+  /* Brand / semantic colors */
+  --ld-color-primary: #3b82f6;          /* blue-500 */
+  --ld-color-primary-hover: #2563eb;    /* blue-600 */
 
-  --ld-color-secondary: #e5e7eb;
-  --ld-color-secondary-hover: #d1d5db;
-  --ld-color-secondary-disabled: #f3f4f6;
-  --ld-color-secondary-disabled-text: #9ca3af;
+  --ld-color-success: #16a34a;          /* green-600 */
+  --ld-color-success-hover: #15803d;    /* green-700 */
 
-  --ld-color-white: #ffffff;
-  --ld-color-text-dark: #e5e7eb;
-  /* текст върху тъмeн фон */
-  --ld-color-text-secondary: #9ca3af;
-  /* вторичен текст */
+  --ld-color-danger: #dc2626;           /* red-600 */
+  --ld-color-danger-hover: #b91c1c;     /* red-700 */
 
-  /* Surfaces / Backgrounds */
-  --ld-color-background-level0: #0b0f16;
-  --ld-color-background-level1: #0e0e12;
-  --ld-color-background-level2: #12131a;
+  --ld-color-warning: #d97706;          /* amber-600 */
+  --ld-color-warning-hover: #b45309;    /* amber-700 */
+
+  --ld-color-info: #0ea5e9;             /* sky-500 */
+  --ld-color-info-hover: #0284c7;       /* sky-600 */
+
+  /* Text */
+  --ld-color-text: #111827;             /* gray-900 (основен текст на светъл фон) */
+  --ld-color-text-secondary: #6b7280;   /* gray-600 */
+  /* алиас за обратна съвместимост */
+  --ld-color-text-dark: var(--ld-color-text);
+
+  /* Surfaces / Backgrounds (light) */
+  --ld-color-background-level0: #ffffff; /* page */
+  --ld-color-background-level1: #f8fafc; /* card / popup */
+  --ld-color-background-level2: #f1f5f9; /* inset / subtle */
 
   /* Borders */
-  --ld-color-border-default: #1f2937;
+  --ld-color-border-default: #e5e7eb;   /* gray-200 */
 
   /* Radius */
   --ld-radius-sm: 4px;
@@ -32,15 +39,25 @@
   --ld-radius-2xl: 24px;
 
   /* Shadows */
-  --ld-shadow-xs: 0 1px 2px rgba(0, 0, 0, .50);
-  --ld-shadow-sm: 0 1px 3px rgba(0, 0, 0, .60);
-  --ld-shadow-md: 0 4px 12px rgba(0, 0, 0, .70);
-  --ld-shadow-lg: 0 8px 24px rgba(0, 0, 0, .80);
-  --ld-shadow-xl: 0 14px 40px rgba(0, 0, 0, .90);
+  --ld-shadow-xs: 0 1px 2px rgba(0, 0, 0, .06);
+  --ld-shadow-sm: 0 1px 3px rgba(0, 0, 0, .10);
+  --ld-shadow-md: 0 4px 12px rgba(0, 0, 0, .14);
+  --ld-shadow-lg: 0 8px 24px rgba(0, 0, 0, .18);
+  --ld-shadow-xl: 0 14px 40px rgba(0, 0, 0, .22);
+
+  /* Containers (static sizes) */
+  --ld-container-1: 448px;
+  --ld-container-2: 688px;
+  --ld-container-3: 880px;
+  --ld-container-4: 1136px;
 
   /* ===================== LEGACY BRIDGE (compat) ===================== */
+  --ld-color-secondary: #1f2937;                 /* за старите „secondary“ върху светло */
+  --ld-color-secondary-hover: #111827;
+  --ld-color-secondary-disabled: #f3f4f6;
+  --ld-color-secondary-disabled-text: #9ca3af;
+  --ld-color-white: #ffffff;
 
-  /* legacy colors → point to LD to avoid drift */
   --color-primary: var(--ld-color-primary);
   --color-primary-hover: var(--ld-color-primary-hover);
   --color-secondary: var(--ld-color-secondary);
@@ -48,42 +65,55 @@
   --color-secondary-disabled: var(--ld-color-secondary-disabled);
   --color-secondary-disabled-text: var(--ld-color-secondary-disabled-text);
   --color-white: var(--ld-color-white);
-  --color-dark-text: var(--ld-color-text-dark);
+  --color-dark-text: var(--ld-color-text);
 
-  /* legacy inputs */
   --input-bg: var(--ld-color-background-level0);
-  --input-text: var(--ld-color-secondary);
+  --input-text: var(--ld-color-text);
   --input-border: var(--ld-color-border-default);
 
-  /* legacy radius */
   --radius-sm: var(--ld-radius-sm);
   --radius-md: var(--ld-radius-md);
   --radius-lg: var(--ld-radius-lg);
 
-  /* legacy shadows */
   --shadow-xs: var(--ld-shadow-xs);
   --shadow-sm: var(--ld-shadow-sm);
   --shadow-md: var(--ld-shadow-md);
   --shadow-lg: var(--ld-shadow-lg);
   --shadow-xl: var(--ld-shadow-xl);
 
-    /* legacy containers */
-  --ld-container-1: 448px;
-  --ld-container-2: 688px;
-  --ld-container-3: 880px;
-  --ld-container-4: 1136px;
+  --ld-color-divider: #e5e7eb;
+}
 
-    /* Semantic roles (добавки) */
-  --ld-color-success: #16a34a;        /* green-600 */
-  --ld-color-success-hover: #15803d;  /* green-700 */
+/* ===================== DARK THEME OVERRIDES ===================== */
+/* Включване: <html data-theme="dark"> или на контейнер. */
+[data-theme="dark"] {
+  /* Text (на тъмен фон) */
+  --ld-color-text: #e5e7eb;            /* light text */
+  --ld-color-text-secondary: #9ca3af;
 
-  --ld-color-danger: #dc2626;         /* red-600 */
-  --ld-color-danger-hover: #b91c1c;   /* red-700 */
+  /* Surfaces / Backgrounds (dark) */
+  --ld-color-background-level0: #0b0f16;
+  --ld-color-background-level1: #0e0e12;
+  --ld-color-background-level2: #12131a;
 
-  --ld-color-warning: #d97706;        /* amber-600 */
-  --ld-color-warning-hover: #b45309;  /* amber-700 */
+  /* Borders */
+  --ld-color-border-default: #1f2937;
 
-  --ld-color-info: #0ea5e9;           /* sky-500 */
-  --ld-color-info-hover: #0284c7;     /* sky-600 */
+  /* Legacy вторични за тъмен UI (обратна съвместимост) */
+  --ld-color-secondary: #e5e7eb;
+  --ld-color-secondary-hover: #d1d5db;
+  --ld-color-secondary-disabled: #2a2f3a;
+  --ld-color-secondary-disabled-text: #9ca3af;
 
+  /* Сенките в dark са по-тъмни; стойностите от преди са ок */
+  --ld-shadow-xs: 0 1px 2px rgba(0, 0, 0, .50);
+  --ld-shadow-sm: 0 1px 3px rgba(0, 0, 0, .60);
+  --ld-shadow-md: 0 4px 12px rgba(0, 0, 0, .70);
+  --ld-shadow-lg: 0 8px 24px rgba(0, 0, 0, .80);
+  --ld-shadow-xl: 0 14px 40px rgba(0, 0, 0, .90);
+
+  /* Алиасът остава валиден */
+  --ld-color-text-dark: var(--ld-color-text);
+
+  --ld-color-divider: rgba(255,255,255,.12);
 }

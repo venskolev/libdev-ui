@@ -19,7 +19,8 @@
   },
   "include": [
     "src",
-    "tsup.config.ts"
+    "tsup.config.ts", 
+    "src/emotion.d.ts"
   ],
   "exclude": ["dist"]
 }

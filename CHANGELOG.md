@@ -5,6 +5,79 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ---
 
+## [0.15.0] — 2025-08-22
+
+### Added in 0.15.0
+
+- **Menu (new component family):** fully integrated with the LibDev style engine and `sl` system prop.
+  - Parts: `MenuRoot`, `MenuTrigger`, `MenuPortal`, `MenuBackdrop`, `MenuPositioner`,
+    `MenuPopup`, `MenuArrow`, `MenuItem`, `MenuSeparator`, `MenuGroup`, `MenuGroupLabel`.
+  - Props (Joy/MUI-like): `open`, `defaultOpen`, `onClose`, `onOpenChange`,
+    `side` (`top|right|bottom|left`), `align` (`start|center|end`), `offset`,
+    `disablePortal`, `keepMounted`, `size` (`sm|md|lg|string`), `variant` (`outlined|plain|soft|solid|string`),
+    `color` (`neutral|primary|success|warning|danger|string`), `sl`.
+  - **Flat exports** from `@libdev-ui/base`:
+  -
+
+    ```ts
+    import {
+      MenuRoot, MenuTrigger, MenuPortal, MenuBackdrop,
+      MenuPositioner, MenuPopup, MenuArrow, MenuItem,
+      MenuSeparator, MenuGroup, MenuGroupLabel,
+    } from "@libdev-ui/base";
+    ```
+
+    (`Menu.*` namespace is still available but flat imports are recommended.)
+  - Behavior:
+    - Toggle open/close via `MenuTrigger`.
+    - Close on `Escape` and outside click.
+    - Anchor-based positioning via `side|align|offset`.
+    - `MenuArrow` automatically orients to the current `side`.
+
+### Fixed in 0.15.0
+
+- **Emotion theme bridge:** resolved runtime error `theme.spacing is not a function`.  
+  Our internal theme coercion now guarantees a valid `spacing()` and `breakpoints`, so `sl` works without requiring a MUI theme.
+- **Separator visibility:** `MenuSeparator` uses `--ld-color-divider` with fallback to `--ld-color-border`, clearly visible in both light and dark modes.
+- **Trigger styling defaults:** sensible surface/background, border, and hover so the trigger never appears “invisible” on light themes.
+- **Backdrop behavior:** transparent backdrop used only for outside-click capture (no global blur/dim).
+
+### Changed in 0.15.0
+
+- Normalized tokens to canonical **LD** names with safe fallbacks:
+  - Surfaces: `--ld-color-background-level0/1/2`
+  - Text: `--ld-color-text`, `--ld-color-text-secondary`
+  - Lines: `--ld-color-border`, `--ld-color-divider`
+  - Radius: `--ld-radius-*`
+  - Shadows: `--ld-shadow-*`
+  - Primary palette: `--ld-color-primary` (+ derived soft/hover where applicable)
+- `MenuPopup` defaults to `variant="outlined"` and reads colors from LD tokens; everything remains overridable via `sl`.
+
+### Theming / Tokens (excerpt)
+
+```css
+:root {
+  --ld-color-background-level1: #ffffff;        /* light */
+  --ld-color-background-level2: #f1f5f9;
+  --ld-color-text: #0f172a;
+  --ld-color-text-secondary: #64748b;
+  --ld-color-border: #e2e8f0;
+  --ld-color-divider: #e5e7eb;
+  --ld-radius-md: 8px;
+  --ld-radius-lg: 16px;
+  --ld-shadow-lg: 0 8px 24px rgba(0,0,0,.18);
+  --ld-color-primary: #3b82f6;
+}
+
+:root[data-theme="dark"] {
+  --ld-color-background-level1: #0e0e12;
+  --ld-color-background-level2: #12131a;
+  --ld-color-text: #e5e7eb;
+  --ld-color-text-secondary: #9ca3af;
+  --ld-color-border: #1f2937;
+  --ld-color-divider: rgba(255,255,255,.12);
+}
+
 ## [0.14.1] - 2025-08-18
 
 ### Fixed in 0.14.1
